@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import Home from './pages/Home'
 import MetricDetailPage from './pages/MetricDetailPage'
 import ThenVsNowPage from './pages/ThenVsNowPage'
+import VelocityPage from './pages/VelocityPage'
 import {
   AgentsPage,
   BenchmarksPage,
@@ -18,6 +19,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="trends" element={<TrendsPage />} />
+        <Route path="velocity" element={<VelocityPage />} />
         <Route path="then-vs-now" element={<ThenVsNowPage />} />
         <Route path="benchmarks" element={<BenchmarksPage />} />
         <Route path="agents" element={<AgentsPage />} />
