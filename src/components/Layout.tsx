@@ -5,6 +5,7 @@ import SEO from './SEO'
 const links = [
   ['Trends', '/trends'],
   ['AI Velocity', '/velocity'],
+  ['Updates', '/updates'],
   ['Then vs Now', '/then-vs-now'],
   ['Benchmarks', '/benchmarks'],
   ['Agents', '/agents'],
