@@ -59,7 +59,7 @@ export default function AIPulse() {
     .slice(0, 4), [])
 
   const healthy = monitorStatus?.monitors.filter((item) => item.status === 'healthy').length ?? 0
-  const total = monitorStatus?.monitors.length ?? 3
+  const total = monitorStatus?.monitors.length ?? 9
   const pending = monitorStatus?.pendingReviewCount ?? 0
   const failed = monitorStatus?.monitors.filter((item) => item.status === 'error').length ?? 0
   const awaiting = monitorStatus?.monitors.filter((item) => item.status === 'awaiting-first-run').length ?? 0
