@@ -9,6 +9,7 @@ import './data-pages.css'
 import './interactive.css'
 import './then-vs-now.css'
 import './metric-detail.css'
+import './velocity.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
