@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import ShareReportCard from '../components/ShareReportCard'
 import { metrics } from '../data/metrics'
 import { getReport, getReportEvents, monthlyReports, reportStatusLabel } from '../data/reports'
 
@@ -25,18 +26,21 @@ export function ReportsPage() {
       </div>
 
       {latest && (
-        <Link className="latest-report-card" to={`/reports/${latest.slug}`}>
-          <div className="latest-report-copy">
-            <div className="report-card-topline">
-              <span className="eyebrow">LATEST EDITION</span>
-              <span className={`report-status ${statusClass(latest.status)}`}>{reportStatusLabel(latest.status)}</span>
+        <>
+          <Link className="latest-report-card" to={`/reports/${latest.slug}`}>
+            <div className="latest-report-copy">
+              <div className="report-card-topline">
+                <span className="eyebrow">LATEST EDITION</span>
+                <span className={`report-status ${statusClass(latest.status)}`}>{reportStatusLabel(latest.status)}</span>
+              </div>
+              <h2>{latest.title}</h2>
+              <p>{latest.deck}</p>
+              <div className="latest-report-meta"><span>Updated {formatDate(latest.updatedAt)}</span><span>{latest.eventIds.length} accepted movements</span><span>{latest.signalMetricIds.length} headline signals</span></div>
             </div>
-            <h2>{latest.title}</h2>
-            <p>{latest.deck}</p>
-            <div className="latest-report-meta"><span>Updated {formatDate(latest.updatedAt)}</span><span>{latest.eventIds.length} accepted movements</span><span>{latest.signalMetricIds.length} headline signals</span></div>
-          </div>
-          <span className="latest-report-arrow" aria-hidden="true">↗</span>
-        </Link>
+            <span className="latest-report-arrow" aria-hidden="true">↗</span>
+          </Link>
+          <ShareReportCard report={latest} compact />
+        </>
       )}
 
       <div className="section-heading reports-heading">
@@ -96,6 +100,7 @@ export function MonthlyReportPage() {
         <h1>{report.period}</h1>
         <p>{report.deck}</p>
         <div className="page-meta-row"><span>Published {formatDate(report.publishedAt)}</span><span>Updated {formatDate(report.updatedAt)}</span><span>{events.length} accepted movements</span></div>
+        <ShareReportCard report={report} />
       </header>
 
       <section className="report-section">
