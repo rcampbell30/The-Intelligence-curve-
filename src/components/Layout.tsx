@@ -3,10 +3,10 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 const links = [
   ['Trends', '/trends'],
+  ['Then vs Now', '/then-vs-now'],
   ['Benchmarks', '/benchmarks'],
   ['Agents', '/agents'],
   ['Scaling', '/scaling'],
-  ['Timeline', '/timeline'],
   ['Methodology', '/methodology'],
 ]
 
