@@ -17,6 +17,7 @@ type Draft = {
 }
 
 type UpdateCategory = 'Benchmarks' | 'Agents' | 'Scaling' | 'Economics' | 'Methodology'
+type PublishedOverride = { metricId: string; value: Record<string, string | number> }
 
 function authorised(req: Request) {
   const expected = Netlify.env.get('TIC_REVIEW_KEY')
@@ -24,14 +25,29 @@ function authorised(req: Request) {
   return Boolean(expected && provided && expected === provided)
 }
 
-function publicOverride(sourceId: string, snapshot: Snapshot, approvedAt: string) {
-  const asOf = approvedAt.slice(0, 10)
+function approvedDate(approvedAt: string) {
+  return approvedAt.slice(0, 10)
+}
 
+function sourceDate(value: unknown, approvedAt: string) {
+  if (typeof value === 'string') {
+    const parsed = new Date(value.replace(/\bSept\.?\b/i, 'Sep'))
+    if (Number.isFinite(parsed.getTime())) return parsed.toISOString().slice(0, 10)
+  }
+  return approvedDate(approvedAt)
+}
+
+function n(snapshot: Snapshot, key: string) {
+  const value = Number(snapshot[key])
+  return Number.isFinite(value) ? value : null
+}
+
+function publicOverrides(sourceId: string, snapshot: Snapshot, approvedAt: string): PublishedOverride[] {
   if (sourceId === 'hle-leaderboard') {
-    const score = Number(snapshot.score)
-    const leader = String(snapshot.leader)
-    if (!Number.isFinite(score) || !leader) return null
-    return {
+    const score = n(snapshot, 'score')
+    const leader = String(snapshot.leader ?? '')
+    if (score === null || !leader) return []
+    return [{
       metricId: 'hle-frontier',
       value: {
         headline: `${score.toFixed(2)}%`,
@@ -40,32 +56,128 @@ function publicOverride(sourceId: string, snapshot: Snapshot, approvedAt: string
         detailInterpretation: `The current dated snapshot is ${score.toFixed(2)}%, versus low-single-digit frontier results when the benchmark was introduced.`,
         seriesValue: score,
         seriesDetail: leader,
-        asOf,
+        asOf: approvedDate(approvedAt),
         approvedAt,
         sourceId,
       },
-    }
+    }]
   }
 
   if (sourceId === 'arc-agi-3-astra') {
-    const standard = Number(snapshot.standard)
-    const adapter = Number(snapshot.providerAdapter)
-    if (!Number.isFinite(standard) || !Number.isFinite(adapter)) return null
-    return {
+    const standard = n(snapshot, 'standard')
+    const adapter = n(snapshot, 'providerAdapter')
+    if (standard === null || adapter === null) return []
+    return [{
       metricId: 'astra-arc-agi-3',
       value: {
         headline: `${standard}%`,
         secondary: `standard harness · ${adapter}% provider adapter`,
         summary: `ARC Prize reports GPT-6 Astra at ${standard}% on ARC-AGI-3 Semi-Private with the standard harness and ${adapter}% with the provider-adapter configuration.`,
         detailInterpretation: `Astra scored ${standard}% under the standard harness and ${adapter}% using a provider-adapter configuration. Those are intentionally kept separate.`,
-        asOf,
+        asOf: approvedDate(approvedAt),
         approvedAt,
         sourceId,
       },
-    }
+    }]
   }
 
-  return null
+  if (sourceId === 'epoch-eci-frontier') {
+    const reasoning = n(snapshot, 'reasoningRate')
+    const nonReasoning = n(snapshot, 'nonReasoningRate')
+    if (reasoning === null || nonReasoning === null) return []
+    return [{
+      metricId: 'eci-frontier',
+      value: {
+        headline: `+${reasoning} ECI / year`,
+        secondary: `reasoning frontier · ~${nonReasoning} ECI / year before reasoning`,
+        summary: `Epoch AI reports the reasoning-model ECI frontier advancing by about ${reasoning} index points per year, versus about ${nonReasoning} for the earlier non-reasoning frontier.`,
+        detailInterpretation: `The approved Epoch source snapshot reports a reasoning-era fitted frontier slope of about ${reasoning} ECI points per year versus about ${nonReasoning} before reasoning models.`,
+        asOf: sourceDate(snapshot.dataUpdated, approvedAt),
+        approvedAt,
+        sourceId,
+      },
+    }]
+  }
+
+  if (sourceId === 'epoch-core-trends') {
+    const stock = n(snapshot, 'computeStockAnnual')
+    const stockMonths = n(snapshot, 'computeStockDoublingMonths')
+    const training = n(snapshot, 'trainingComputeAnnual')
+    const trainingMonths = n(snapshot, 'trainingComputeDoublingMonths')
+    const context = n(snapshot, 'contextWindowAnnual')
+    const contextMonths = n(snapshot, 'contextWindowDoublingMonths')
+    if ([stock, stockMonths, training, trainingMonths, context, contextMonths].some((value) => value === null)) return []
+    const asOf = sourceDate(snapshot.pageUpdated, approvedAt)
+    return [
+      {
+        metricId: 'global-compute-capacity',
+        value: {
+          headline: `${stock}× / year`, secondary: `${stockMonths} month doubling time`,
+          summary: `Epoch AI estimates the total computing power of the global stock of AI chips has grown at about ${stock}× per year over its fitted period.`,
+          detailInterpretation: `The approved Epoch trend snapshot corresponds to about ${stock}× annual growth and a ${stockMonths}-month doubling time.`,
+          asOf, approvedAt, sourceId,
+        },
+      },
+      {
+        metricId: 'training-compute',
+        value: {
+          headline: `${training}× / year`, secondary: `${trainingMonths} month doubling time`,
+          summary: `Epoch AI reports frontier language-model training compute growing at about ${training}× per year over the fitted period.`,
+          detailInterpretation: `The approved Epoch trend snapshot corresponds to about ${training}× annual growth and a ${trainingMonths}-month doubling time.`,
+          asOf, approvedAt, sourceId,
+        },
+      },
+      {
+        metricId: 'context-windows',
+        value: {
+          headline: `${context}× / year`, secondary: `${contextMonths} month doubling time`,
+          summary: `Epoch AI estimates frontier LLM context-window size has grown at about ${context}× per year over the fitted period.`,
+          detailInterpretation: `The approved Epoch trend snapshot corresponds to about ${context}× annual growth and a ${contextMonths}-month doubling time. Context length remains an input-capacity measure, not a direct intelligence measure.`,
+          asOf, approvedAt, sourceId,
+        },
+      },
+    ]
+  }
+
+  if (sourceId === 'epoch-chip-price-performance') {
+    const annual = n(snapshot, 'annualGrowthPercent')
+    const years = n(snapshot, 'doublingYears')
+    if (annual === null || years === null) return []
+    return [{
+      metricId: 'chip-price-performance',
+      value: {
+        headline: `+${annual}% / year`,
+        secondary: `${years} year doubling time`,
+        summary: `Epoch AI estimates spending-weighted AI-chip performance per dollar has improved by about ${annual}% per year over the fitted period.`,
+        detailInterpretation: `The approved Epoch source snapshot reports about ${annual}% annual improvement, corresponding to a ${years}-year doubling time in performance per dollar.`,
+        asOf: sourceDate(snapshot.dataUpdated, approvedAt),
+        approvedAt,
+        sourceId,
+      },
+    }]
+  }
+
+  if (sourceId === 'epoch-inference-price') {
+    const median = n(snapshot, 'medianAnnualDecline')
+    const low = n(snapshot, 'rangeLow')
+    const high = n(snapshot, 'rangeHigh')
+    const recent = n(snapshot, 'recentMedianAnnualDecline')
+    if (median === null || low === null || high === null || recent === null) return []
+    return [{
+      metricId: 'inference-price',
+      value: {
+        headline: `~${median}× cheaper / year`,
+        secondary: `median historical fit · recent subset ~${recent}× / year`,
+        summary: `Epoch AI’s approved analysis reports a median fitted inference-price decline of about ${median}× per year across studied capability thresholds, with task-specific fits spanning roughly ${low}× to ${high}×.`,
+        detailInterpretation: `The approved source snapshot keeps the median ${median}× annual decline alongside its very wide ${low}×–${high}× task-specific range; it is not a universal price law or forecast.`,
+        asOf: approvedDate(approvedAt),
+        approvedAt,
+        sourceId,
+      },
+    }]
+  }
+
+  return []
 }
 
 function categoryForSource(sourceId: string): UpdateCategory {
@@ -95,7 +207,7 @@ function publicUpdateForDraft(draft: Draft, reviewedAt: string) {
     date: reviewedAt.slice(0, 10),
     category: categoryForSource(draft.sourceId),
     title: `${draft.sourceLabel} change approved`,
-    summary: `A monitored source change was reviewed and approved into The Intelligence Curve’s accepted evidence layer.`,
+    summary: 'A monitored source change was reviewed and approved into The Intelligence Curve’s accepted evidence layer.',
     source: draft.sourceLabel,
     sourceUrl: draft.sourceUrl,
     ...(draft.metricIds[0] ? { metricId: draft.metricIds[0] } : {}),
@@ -122,13 +234,13 @@ export default async (req: Request) => {
   const action = body.action as 'approve' | 'reject'
   const stateKey = `state/${draft.sourceId}`
   const state = await store.get(stateKey, { type: 'json' }) as Record<string, unknown> | null
-  const override = action === 'approve' ? publicOverride(draft.sourceId, draft.candidateSnapshot, reviewedAt) : null
+  const overrides = action === 'approve' ? publicOverrides(draft.sourceId, draft.candidateSnapshot, reviewedAt) : []
   const publicUpdate = action === 'approve' ? publicUpdateForDraft(draft, reviewedAt) : null
 
   if (action === 'approve') {
     await store.setJSON(`baselines/${draft.sourceId}`, draft.candidateSnapshot)
     await store.delete(`ignored/${draft.sourceId}`)
-    if (override) await store.setJSON(`overrides/${override.metricId}`, override.value)
+    await Promise.all(overrides.map((override) => store.setJSON(`overrides/${override.metricId}`, override.value)))
     if (publicUpdate) await store.setJSON(`public-updates/${draft.detectedAt}-${draft.sourceId}`, publicUpdate)
 
     if (state) {
@@ -163,11 +275,18 @@ export default async (req: Request) => {
     reviewedAt,
     publishedSnapshot: draft.publishedSnapshot,
     candidateSnapshot: draft.candidateSnapshot,
-    publishedOverride: override?.value ?? null,
+    publishedOverrides: overrides,
     publicUpdate: publicUpdate ?? null,
   })
 
-  return Response.json({ ok: true, action, reviewedAt, published: Boolean(override), movementPublished: Boolean(publicUpdate) }, {
+  return Response.json({
+    ok: true,
+    action,
+    reviewedAt,
+    published: overrides.length > 0,
+    publishedMetrics: overrides.map((override) => override.metricId),
+    movementPublished: Boolean(publicUpdate),
+  }, {
     headers: { 'cache-control': 'no-store' },
   })
 }
