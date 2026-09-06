@@ -37,6 +37,7 @@ function htmlToText(html: string) {
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&times;|&#215;/gi, '×')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -44,6 +45,12 @@ function htmlToText(html: string) {
 function requireMatch(match: RegExpMatchArray | null, source: string) {
   if (!match?.[1]) throw new Error(`Could not parse ${source}`)
   return match[1].trim()
+}
+
+function requireNumber(match: RegExpMatchArray | null, source: string) {
+  const value = Number(requireMatch(match, source))
+  if (!Number.isFinite(value)) throw new Error(`Could not parse numeric ${source}`)
+  return value
 }
 
 const monitors: MonitorDefinition[] = [
@@ -86,6 +93,91 @@ const monitors: MonitorDefinition[] = [
       return { standard: Number(standardMatch[1]), providerAdapter: Number(adapterMatch[1]) }
     },
   },
+  {
+    id: 'epoch-eci-frontier',
+    label: 'Epoch ECI frontier trend',
+    url: 'https://epoch.ai/data-insights/eci-frontier-trend',
+    metricIds: ['eci-frontier'],
+    publishedSnapshot: { reasoningRate: 14, nonReasoningRate: 6, dataUpdated: 'Sep. 1, 2026' },
+    parse: (text) => ({
+      reasoningRate: requireNumber(text.match(/advanced linearly by\s+(\d+(?:\.\d+)?)\s+points per year/i), 'ECI reasoning rate'),
+      nonReasoningRate: requireNumber(text.match(/compared with\s+(\d+(?:\.\d+)?)\s+points per year for non-reasoning/i), 'ECI non-reasoning rate'),
+      dataUpdated: requireMatch(text.match(/CSV,?\s+Updated\s+([A-Za-z]{3,9}\.?\s+\d{1,2},\s+\d{4})/i), 'ECI data update date'),
+    }),
+  },
+  {
+    id: 'epoch-core-trends',
+    label: 'Epoch core AI scaling trends',
+    url: 'https://epoch.ai/trends',
+    metricIds: ['global-compute-capacity', 'training-compute', 'context-windows'],
+    publishedSnapshot: {
+      pageUpdated: 'Feb. 5, 2026',
+      computeStockAnnual: 3.4,
+      computeStockDoublingMonths: 6.8,
+      trainingComputeAnnual: 5,
+      trainingComputeDoublingMonths: 5.2,
+      contextWindowAnnual: 30,
+      contextWindowDoublingMonths: 2.4,
+    },
+    parse: (text) => ({
+      pageUpdated: requireMatch(text.match(/Updated\s+([A-Za-z]{3,9}\.?\s+\d{1,2},\s+\d{4})/i), 'Epoch Trends update date'),
+      computeStockAnnual: requireNumber(text.match(/Compute stock growth\s+(\d+(?:\.\d+)?)\s*[×x]\s*\/year/i), 'compute-stock annual growth'),
+      computeStockDoublingMonths: requireNumber(text.match(/Compute stock growth[\s\S]{0,100}?(\d+(?:\.\d+)?)\s*months/i), 'compute-stock doubling time'),
+      trainingComputeAnnual: requireNumber(text.match(/Training compute\s+(\d+(?:\.\d+)?)\s*[×x]\s*\/year/i), 'training-compute annual growth'),
+      trainingComputeDoublingMonths: requireNumber(text.match(/Training compute[\s\S]{0,100}?(\d+(?:\.\d+)?)\s*months/i), 'training-compute doubling time'),
+      contextWindowAnnual: requireNumber(text.match(/LLM context windows\s+(\d+(?:\.\d+)?)\s*[×x]\s*\/year/i), 'context-window annual growth'),
+      contextWindowDoublingMonths: requireNumber(text.match(/LLM context windows[\s\S]{0,100}?(\d+(?:\.\d+)?)\s*months/i), 'context-window doubling time'),
+    }),
+  },
+  {
+    id: 'epoch-data-center-compute',
+    label: 'Epoch frontier data-centre compute',
+    url: 'https://epoch.ai/data-insights/largest-data-center-compute',
+    metricIds: [],
+    publishedSnapshot: { trendAnnual: 3.3, doublingMonths: 7, dataUpdated: 'Jun. 11, 2026' },
+    parse: (text) => ({
+      trendAnnual: requireNumber(text.match(/resulting in the\s+(\d+(?:\.\d+)?)\s*[x×]\s*per year growth trend/i), 'data-centre compute growth rate'),
+      doublingMonths: requireNumber(text.match(/equivalent to a doubling time of\s+(\d+(?:\.\d+)?)\s+months/i), 'data-centre compute doubling time'),
+      dataUpdated: requireMatch(text.match(/CSV,?\s+Updated\s+([A-Za-z]{3,9}\.?\s+\d{1,2},\s+\d{4})/i), 'data-centre compute update date'),
+    }),
+  },
+  {
+    id: 'epoch-data-center-power',
+    label: 'Epoch frontier data-centre power',
+    url: 'https://epoch.ai/data-insights/frontier-data-center-power',
+    metricIds: [],
+    publishedSnapshot: { doublingMonths: 10, currentRecordMW: 950, dataUpdated: 'Aug. 31, 2026' },
+    parse: (text) => ({
+      doublingMonths: requireNumber(text.match(/doubled every\s+(\d+(?:\.\d+)?)\s+months/i), 'data-centre power doubling time'),
+      currentRecordMW: requireNumber(text.match(/current record-holder[^.]{0,180}?estimated\s+(\d+(?:\.\d+)?)\s*MW/i), 'data-centre power record'),
+      dataUpdated: requireMatch(text.match(/CSV,?\s+Updated\s+([A-Za-z]{3,9}\.?\s+\d{1,2},\s+\d{4})/i), 'data-centre power update date'),
+    }),
+  },
+  {
+    id: 'epoch-chip-price-performance',
+    label: 'Epoch AI-chip performance per dollar',
+    url: 'https://epoch.ai/data-insights/chip-performance-per-dollar',
+    metricIds: ['chip-price-performance'],
+    publishedSnapshot: { annualGrowthPercent: 49, doublingYears: 1.7, dataUpdated: 'Aug. 13, 2026' },
+    parse: (text) => ({
+      annualGrowthPercent: requireNumber(text.match(/average growth rate of about\s+(\d+(?:\.\d+)?)%\s+per year/i), 'chip performance-per-dollar growth'),
+      doublingYears: requireNumber(text.match(/doubling time of\s+(\d+(?:\.\d+)?)\s+years/i), 'chip performance-per-dollar doubling time'),
+      dataUpdated: requireMatch(text.match(/CSV,?\s+Updated\s+([A-Za-z]{3,9}\.?\s+\d{1,2},\s+\d{4})/i), 'chip performance-per-dollar update date'),
+    }),
+  },
+  {
+    id: 'epoch-inference-price',
+    label: 'Epoch inference-price trend analysis',
+    url: 'https://epoch.ai/data-insights/llm-inference-price-trends',
+    metricIds: ['inference-price'],
+    publishedSnapshot: { medianAnnualDecline: 50, rangeLow: 9, rangeHigh: 900, recentMedianAnnualDecline: 200 },
+    parse: (text) => ({
+      medianAnnualDecline: requireNumber(text.match(/median of\s+(\d+(?:\.\d+)?)\s*[x×]\s*per year/i), 'inference-price median decline'),
+      rangeLow: requireNumber(text.match(/declining between\s+(\d+(?:\.\d+)?)\s*[x×]\s*per year/i), 'inference-price lower range'),
+      rangeHigh: requireNumber(text.match(/between\s+\d+(?:\.\d+)?\s*[x×]\s*per year and\s+(\d+(?:\.\d+)?)\s*[x×]\s*per year/i), 'inference-price upper range'),
+      recentMedianAnnualDecline: requireNumber(text.match(/median rate increased from\s+\d+(?:\.\d+)?\s*[x×]\s*per year to\s+(\d+(?:\.\d+)?)\s*[x×]\s*per year/i), 'recent inference-price median decline'),
+    }),
+  },
 ]
 
 function snapshotsEqual(a?: Snapshot | null, b?: Snapshot | null) {
@@ -105,10 +197,12 @@ export default async () => {
   const store = getStore(STORE_NAME, { consistency: 'strong' })
   const checkedAt = new Date().toISOString()
 
-  for (const monitor of monitors) {
-    const previous = await store.get(`state/${monitor.id}`, { type: 'json' }) as MonitorState | null
-    const approvedBaseline = await store.get(`baselines/${monitor.id}`, { type: 'json' }) as Snapshot | null
-    const ignoredCandidate = await store.get(`ignored/${monitor.id}`, { type: 'json' }) as Snapshot | null
+  await Promise.all(monitors.map(async (monitor) => {
+    const [previous, approvedBaseline, ignoredCandidate] = await Promise.all([
+      store.get(`state/${monitor.id}`, { type: 'json' }) as Promise<MonitorState | null>,
+      store.get(`baselines/${monitor.id}`, { type: 'json' }) as Promise<Snapshot | null>,
+      store.get(`ignored/${monitor.id}`, { type: 'json' }) as Promise<Snapshot | null>,
+    ])
     const publishedSnapshot = approvedBaseline ?? monitor.publishedSnapshot
 
     try {
@@ -166,7 +260,7 @@ export default async () => {
       await store.setJSON(`state/${monitor.id}`, state)
       console.error(`[source-monitor] ${monitor.id}: ${message}`)
     }
-  }
+  }))
 }
 
 export const config: Config = {
