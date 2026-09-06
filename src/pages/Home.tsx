@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import EvidenceDashboard from '../components/EvidenceDashboard'
 import GrowthChart from '../components/GrowthChart'
 import MetricCard from '../components/MetricCard'
 import { categories, metrics } from '../data/metrics'
@@ -15,17 +16,19 @@ export default function Home() {
           <Link to="/methodology" className="button secondary">How we measure</Link>
         </div>
         <div className="hero-rule">
-          <span>Observed data</span><span>Historical trend fits</span><span>Clearly labelled extrapolations</span>
+          <span>Updated 6 Sep 2026</span><span>{metrics.length} headline indicators</span><span>Observed ≠ fitted ≠ projected</span>
         </div>
       </section>
 
       <section className="section-pad block-section">
         <div className="section-heading">
-          <div><span className="eyebrow">SIGNALS RIGHT NOW</span><h2>Four curves worth watching</h2></div>
-          <p>Every headline number keeps its source and methodological caveat attached.</p>
+          <div><span className="eyebrow">SIGNALS RIGHT NOW</span><h2>{metrics.length} curves worth watching</h2></div>
+          <p>Every headline number keeps its source, date and methodological caveat attached. No single metric is presented as an “AGI score”.</p>
         </div>
         <div className="metric-grid">{metrics.map((metric) => <MetricCard key={metric.id} metric={metric} />)}</div>
       </section>
+
+      <EvidenceDashboard />
 
       <section className="section-pad block-section"><GrowthChart /></section>
 
