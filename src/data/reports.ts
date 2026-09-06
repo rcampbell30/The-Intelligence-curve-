@@ -37,10 +37,6 @@ export type MonthlyReport = ReportDefinition & {
 const REPORT_START = '2026-09'
 const SIGNAL_METRIC_IDS = ['hle-frontier', 'astra-arc-agi-3', 'eci-frontier', 'agent-time-horizon']
 
-function utcDateString(date = new Date()) {
-  return date.toISOString().slice(0, 10)
-}
-
 export function monthSlug(date = new Date()) {
   return date.toISOString().slice(0, 7)
 }
@@ -90,8 +86,7 @@ function genericQuietSignals() {
 export function buildReportDefinition(slug: string): ReportDefinition {
   const period = monthPeriod(slug)
   const events = updateEvents.filter((event) => event.date.startsWith(slug))
-  const today = utcDateString()
-  const isCurrent = slug === monthSlug()
+  const latestEventDate = [...events].sort((a, b) => b.date.localeCompare(a.date))[0]?.date
 
   if (slug === '2026-09') {
     return {
@@ -100,7 +95,7 @@ export function buildReportDefinition(slug: string): ReportDefinition {
       title: 'State of AI Progress — September 2026',
       status: 'month-to-date',
       publishedAt: '2026-09-06',
-      updatedAt: isCurrent ? today : '2026-09-30',
+      updatedAt: latestEventDate ?? '2026-09-06',
       deck: 'A month-to-date evidence brief covering the clearest movements in frontier capability, autonomous work and the infrastructure behind AI progress.',
       takeaway: 'The strongest accepted movement so far this month is in frontier capability measurement: HLE, ARC-AGI-3 and the ECI reasoning-era trend all point to unusually rapid gains, but they measure different things and should not be collapsed into one “intelligence score”.',
       signalMetricIds: SIGNAL_METRIC_IDS,
@@ -129,7 +124,7 @@ export function buildReportDefinition(slug: string): ReportDefinition {
     title: `State of AI Progress — ${period}`,
     status: 'month-to-date',
     publishedAt: `${slug}-01`,
-    updatedAt: isCurrent ? today : `${slug}-01`,
+    updatedAt: latestEventDate ?? `${slug}-01`,
     deck: `A month-to-date evidence brief covering accepted movement in frontier capability, autonomous work, infrastructure and AI economics during ${period}.`,
     takeaway: events.length
       ? `${events.length} accepted source-linked movement${events.length === 1 ? '' : 's'} ${events.length === 1 ? 'is' : 'are'} currently recorded for ${period}. The report keeps benchmark results, fitted trends and infrastructure records separate rather than combining them into one progress score.`
