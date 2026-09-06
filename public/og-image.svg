@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080a0d"/><stop offset="1" stop-color="#11151a"/></linearGradient>
+    <radialGradient id="glow" cx="85%" cy="5%" r="55%"><stop offset="0" stop-color="#b9ff66" stop-opacity=".18"/><stop offset="1" stop-color="#b9ff66" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="34" y="34" width="1132" height="562" fill="none" stroke="#2a2e32" stroke-width="2"/>
+  <text x="72" y="92" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="700" fill="#b9ff66">THE INTELLIGENCE CURVE</text>
+  <text x="72" y="136" font-family="monospace" font-size="18" fill="#8c949d">TRACKING THE PACE OF AI PROGRESS</text>
+  <text x="72" y="258" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="700" fill="#f3f5f4">How fast is intelligence</text>
+  <text x="72" y="330" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="700" fill="#b9ff66">actually improving?</text>
+  <text x="72" y="408" font-family="Arial,Helvetica,sans-serif" font-size="25" fill="#f3f5f4">Capability · autonomy · compute · efficiency · cost</text>
+  <text x="72" y="454" font-family="Arial,Helvetica,sans-serif" font-size="21" fill="#8c949d">Source-first. Evidence-labelled. No fake “AGI percentage”.</text>
+  <polyline points="760,430 825,398 890,365 955,318 1020,252 1092,172" fill="none" stroke="#b9ff66" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#b9ff66"><circle cx="760" cy="430" r="6"/><circle cx="825" cy="398" r="6"/><circle cx="890" cy="365" r="6"/><circle cx="955" cy="318" r="6"/><circle cx="1020" cy="252" r="6"/><circle cx="1092" cy="172" r="6"/></g>
+  <line x1="72" y1="536" x2="1128" y2="536" stroke="#2a2e32" stroke-width="2"/>
+  <text x="72" y="574" font-family="monospace" font-size="18" font-weight="700" fill="#f3f5f4">intelligencecurve.netlify.app</text>
+</svg>
