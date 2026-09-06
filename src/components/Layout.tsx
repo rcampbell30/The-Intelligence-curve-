@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import SEO from './SEO'
 
 const links = [
   ['Trends', '/trends'],
+  ['AI Velocity', '/velocity'],
   ['Then vs Now', '/then-vs-now'],
   ['Benchmarks', '/benchmarks'],
   ['Agents', '/agents'],
@@ -26,6 +28,7 @@ export default function Layout() {
 
   return (
     <div className="site-shell">
+      <SEO />
       <header className="site-header">
         <NavLink to="/" className="brand" aria-label="The Intelligence Curve home" onClick={() => setMenuOpen(false)}>
           <span className="brand-mark" aria-hidden="true">↗</span>
