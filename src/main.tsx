@@ -14,6 +14,7 @@ import './velocity.css'
 import './updates.css'
 import './monitoring.css'
 import './review.css'
+import './ai-pulse.css'
 
 async function bootstrap() {
   await loadMetricOverrides()
