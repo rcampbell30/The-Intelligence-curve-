@@ -9,7 +9,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import FreshnessBadge from '../components/FreshnessBadge'
 import ShareMetricCard from '../components/ShareMetricCard'
+import { formatFreshnessDate, getFreshness } from '../data/freshness'
 import { metricDetails } from '../data/metricDetails'
 import { metrics } from '../data/metrics'
 
@@ -41,6 +43,7 @@ export default function MetricDetailPage() {
   }
 
   const related = metrics.filter((item) => item.category === metric.category && item.id !== metric.id).slice(0, 3)
+  const freshness = getFreshness(metric.id)
   const isLog = detail.seriesScale === 'log'
   const seriesValues = detail.series?.map((point) => point.value) ?? []
   const maxValue = seriesValues.length ? Math.max(...seriesValues) : 1
@@ -60,6 +63,10 @@ export default function MetricDetailPage() {
         <p className="metric-detail-secondary">{metric.secondary}</p>
         <p className="metric-detail-summary">{metric.summary}</p>
         {metric.caution && <p className="metric-detail-caution">{metric.caution}</p>}
+        <div className="metric-detail-freshness">
+          <FreshnessBadge metricId={metric.id} />
+          {freshness && <span className="freshness-detail-copy">source snapshot {metric.asOf} · next review due {formatFreshnessDate(freshness.dueDate)}</span>}
+        </div>
         <ShareMetricCard metric={metric} detail={detail} />
       </div>
 
@@ -163,10 +170,25 @@ export default function MetricDetailPage() {
         <div>
           <span className="eyebrow">PRIMARY SOURCE</span>
           <h2>{metric.source}</h2>
-          <p>Snapshot date: {metric.asOf}</p>
+          <p>Source snapshot: {metric.asOf}{freshness ? ` · last verified ${formatFreshnessDate(freshness.lastVerified)}` : ''}</p>
         </div>
         <a className="button secondary" href={metric.sourceUrl} target="_blank" rel="noreferrer">Open original source ↗</a>
       </div>
+
+      {freshness && (
+        <div className="freshness-panel">
+          <div>
+            <span className="eyebrow">FRESHNESS POLICY</span>
+            <h3>{freshness.reviewLabel}</h3>
+            <p>{freshness.note ?? 'The original source is checked on this cadence for revised values, methodology changes or replacement datasets.'}</p>
+          </div>
+          <div className="freshness-panel-meta">
+            <strong>{freshness.sourceVersion}</strong>
+            <span>Verified {formatFreshnessDate(freshness.lastVerified)}</span>
+            <span>Next review due {formatFreshnessDate(freshness.dueDate)}</span>
+          </div>
+        </div>
+      )}
 
       {related.length > 0 && (
         <section className="related-metrics">
