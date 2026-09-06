@@ -5,6 +5,7 @@ import App from './App'
 import './styles.css'
 import './evidence.css'
 import './responsive.css'
+import './data-pages.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
