@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import MetricDetailPage from './pages/MetricDetailPage'
+import NotFoundPage from './pages/NotFoundPage'
 import ReviewPage from './pages/ReviewPage'
 import { MonthlyReportPage, ReportsPage } from './pages/ReportsPages'
 import ThenVsNowPage from './pages/ThenVsNowPage'
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="timeline" element={<TimelinePage />} />
         <Route path="methodology" element={<MethodologyPage />} />
         <Route path="metric/:metricId" element={<MetricDetailPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )
