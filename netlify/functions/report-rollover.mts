@@ -2,7 +2,7 @@ import type { Config } from '@netlify/functions'
 import { getStore } from '@netlify/blobs'
 import { metrics, type Metric } from '../../src/data/metrics'
 import { buildReportDefinition, type FrozenReportSnapshot, type FrozenMetricSignal } from '../../src/data/reports'
-import { updateEvents } from '../../src/data/updates'
+import { mergeRuntimeUpdateEvents, updateEvents, type UpdateEvent } from '../../src/data/updates'
 
 type MetricOverride = Partial<Pick<Metric, 'headline' | 'secondary' | 'summary' | 'asOf'>> & {
   approvedAt?: string
@@ -33,6 +33,14 @@ async function loadOverrides() {
   return overrides
 }
 
+async function loadRuntimeUpdates() {
+  const store = getStore('tic-source-monitoring', { consistency: 'strong' })
+  const { blobs } = await store.list({ prefix: 'public-updates/' })
+  return (await Promise.all(blobs.map(async ({ key }) => {
+    return await store.get(key, { type: 'json' }) as UpdateEvent | null
+  }))).filter((event): event is UpdateEvent => Boolean(event))
+}
+
 function freezeSignal(metric: Metric, override?: MetricOverride): FrozenMetricSignal {
   return {
     ...metric,
@@ -55,21 +63,24 @@ export default async () => {
   const snapshotKey = `snapshots/${slug}`
   if (await archive.get(snapshotKey, { type: 'json' })) return
 
+  const runtimeUpdates = await loadRuntimeUpdates()
+  mergeRuntimeUpdateEvents(runtimeUpdates)
+
   const report = buildReportDefinition(slug)
   const overrides = await loadOverrides()
   const signals = report.signalMetricIds
     .map((metricId) => metrics.find((metric) => metric.id === metricId))
     .filter((metric): metric is Metric => Boolean(metric))
     .map((metric) => freezeSignal(metric, overrides[metric.id]))
-  const events = report.eventIds
-    .map((eventId) => updateEvents.find((event) => event.id === eventId))
-    .filter((event): event is NonNullable<typeof event> => Boolean(event))
-    .sort((a, b) => b.date.localeCompare(a.date))
+  const events = updateEvents
+    .filter((event) => event.date.startsWith(slug))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
 
   const finalizedAt = now.toISOString()
   const finalReport = {
     ...report,
     status: 'final' as const,
+    eventIds: events.map((event) => event.id),
     updatedAt: lastDayOfMonth(slug),
     methodology: `Final edition frozen automatically after month-end. The accepted headline metric values and update-event records below are stored as a write-once snapshot finalized ${finalizedAt}; later leaderboard or runtime changes do not rewrite this edition.`,
   }
