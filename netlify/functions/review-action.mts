@@ -16,6 +16,8 @@ type Draft = {
   action?: 'approve' | 'reject'
 }
 
+type UpdateCategory = 'Benchmarks' | 'Agents' | 'Scaling' | 'Economics' | 'Methodology'
+
 function authorised(req: Request) {
   const expected = Netlify.env.get('TIC_REVIEW_KEY')
   const provided = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
@@ -66,6 +68,42 @@ function publicOverride(sourceId: string, snapshot: Snapshot, approvedAt: string
   return null
 }
 
+function categoryForSource(sourceId: string): UpdateCategory {
+  if (sourceId === 'metr-time-horizons') return 'Agents'
+  if (sourceId === 'epoch-core-trends' || sourceId === 'epoch-data-center-compute' || sourceId === 'epoch-data-center-power') return 'Scaling'
+  if (sourceId === 'epoch-chip-price-performance' || sourceId === 'epoch-inference-price') return 'Economics'
+  return 'Benchmarks'
+}
+
+function humanKey(key: string) {
+  return key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').toLowerCase()
+}
+
+function snapshotDiff(before: Snapshot, after: Snapshot) {
+  const keys = Array.from(new Set([...Object.keys(before), ...Object.keys(after)]))
+  return keys
+    .filter((key) => before[key] !== after[key])
+    .slice(0, 3)
+    .map((key) => `${humanKey(key)} ${String(before[key] ?? '—')} → ${String(after[key] ?? '—')}`)
+    .join(' · ')
+}
+
+function publicUpdateForDraft(draft: Draft, reviewedAt: string) {
+  const diff = snapshotDiff(draft.publishedSnapshot, draft.candidateSnapshot)
+  return {
+    id: `monitored-${draft.detectedAt}-${draft.sourceId}`,
+    date: reviewedAt.slice(0, 10),
+    category: categoryForSource(draft.sourceId),
+    title: `${draft.sourceLabel} change approved`,
+    summary: `A monitored source change was reviewed and approved into The Intelligence Curve’s accepted evidence layer.`,
+    source: draft.sourceLabel,
+    sourceUrl: draft.sourceUrl,
+    ...(draft.metricIds[0] ? { metricId: draft.metricIds[0] } : {}),
+    ...(diff ? { changeLabel: diff } : {}),
+    note: 'This movement entry records the approved source diff. Benchmark, harness and methodology caveats remain attached to the source and metric pages.',
+  }
+}
+
 export default async (req: Request) => {
   if (!authorised(req)) return new Response('Unauthorized', { status: 401 })
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 })
@@ -85,11 +123,13 @@ export default async (req: Request) => {
   const stateKey = `state/${draft.sourceId}`
   const state = await store.get(stateKey, { type: 'json' }) as Record<string, unknown> | null
   const override = action === 'approve' ? publicOverride(draft.sourceId, draft.candidateSnapshot, reviewedAt) : null
+  const publicUpdate = action === 'approve' ? publicUpdateForDraft(draft, reviewedAt) : null
 
   if (action === 'approve') {
     await store.setJSON(`baselines/${draft.sourceId}`, draft.candidateSnapshot)
     await store.delete(`ignored/${draft.sourceId}`)
     if (override) await store.setJSON(`overrides/${override.metricId}`, override.value)
+    if (publicUpdate) await store.setJSON(`public-updates/${draft.detectedAt}-${draft.sourceId}`, publicUpdate)
 
     if (state) {
       await store.setJSON(stateKey, {
@@ -124,9 +164,10 @@ export default async (req: Request) => {
     publishedSnapshot: draft.publishedSnapshot,
     candidateSnapshot: draft.candidateSnapshot,
     publishedOverride: override?.value ?? null,
+    publicUpdate: publicUpdate ?? null,
   })
 
-  return Response.json({ ok: true, action, reviewedAt, published: Boolean(override) }, {
+  return Response.json({ ok: true, action, reviewedAt, published: Boolean(override), movementPublished: Boolean(publicUpdate) }, {
     headers: { 'cache-control': 'no-store' },
   })
 }
