@@ -259,6 +259,19 @@
   border-top: 1px solid rgba(255, 255, 255, 0.09);
 }
 
+.report-empty-state {
+  padding: 2rem;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: #7f8982;
+  background: rgba(255, 255, 255, 0.018);
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .report-event {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
