@@ -7,9 +7,9 @@ import { MonthlyReportPage, ReportsPage } from './pages/ReportsPages'
 import ThenVsNowPage from './pages/ThenVsNowPage'
 import UpdatesPage from './pages/UpdatesPage'
 import VelocityPage from './pages/VelocityPage'
+import BenchmarksPage from './pages/BenchmarksPage'
 import {
   AgentsPage,
-  BenchmarksPage,
   MethodologyPage,
   ScalingPage,
   TimelinePage,
