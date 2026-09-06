@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { metrics } from '../data/metrics'
+import { getReport } from '../data/reports'
 
 export const SITE_URL = 'https://intelligencecurve.netlify.app'
 const SITE_NAME = 'The Intelligence Curve'
@@ -12,6 +13,7 @@ const pages: Record<string, { title: string; description: string }> = {
   '/trends': { title: 'AI Trends — The Intelligence Curve', description: 'Compare historical rates across AI capability, compute, context, efficiency, cost and autonomous work.' },
   '/velocity': { title: 'AI Velocity — The Intelligence Curve', description: 'Compare how quickly major AI progress indicators are changing using source-backed doubling and halving times.' },
   '/updates': { title: 'AI Progress Updates — The Intelligence Curve', description: 'A source-linked AI progress change log with freshness status, verification dates and review cadence for every headline metric.' },
+  '/reports': { title: 'Monthly State of AI Progress Reports — The Intelligence Curve', description: 'Monthly source-linked AI progress briefs covering what moved, what stayed unchanged and how the evidence should be interpreted.' },
   '/review': { title: 'Private Review — The Intelligence Curve', description: 'Protected editorial review workflow for monitored source changes.' },
   '/then-vs-now': { title: 'Then vs Now — The Intelligence Curve', description: 'Before-and-after comparisons showing how frontier AI capability, autonomy, infrastructure and economics have changed.' },
   '/benchmarks': { title: 'AI Benchmarks — The Intelligence Curve', description: 'Track frontier benchmark results historically with source, harness and methodology context preserved.' },
@@ -49,11 +51,20 @@ export default function SEO() {
     const pathname = location.pathname.replace(/\/$/, '') || '/'
     const metricId = pathname.startsWith('/metric/') ? pathname.split('/').pop() : undefined
     const metric = metricId ? metrics.find((item) => item.id === metricId) : undefined
+    const reportSlug = pathname.startsWith('/reports/') ? pathname.split('/').pop() : undefined
+    const report = reportSlug ? getReport(reportSlug) : undefined
 
-    const title = metric ? `${metric.label} — The Intelligence Curve` : (pages[pathname]?.title ?? SITE_NAME)
-    const description = metric ? `${metric.summary} ${metric.secondary}. Source: ${metric.source}.` : (pages[pathname]?.description ?? DEFAULT_DESCRIPTION)
+    const title = metric
+      ? `${metric.label} — The Intelligence Curve`
+      : report
+        ? `${report.title} — The Intelligence Curve`
+        : (pages[pathname]?.title ?? SITE_NAME)
+    const description = metric
+      ? `${metric.summary} ${metric.secondary}. Source: ${metric.source}.`
+      : report?.deck ?? pages[pathname]?.description ?? DEFAULT_DESCRIPTION
     const canonical = `${SITE_URL}${pathname === '/' ? '' : pathname}`
     const isPrivateReview = pathname === '/review'
+    const isArticle = Boolean(report)
 
     document.title = title
     ensureMeta('description', description)
@@ -61,7 +72,7 @@ export default function SEO() {
     ensureMeta('og:title', title, true)
     ensureMeta('og:description', description, true)
     ensureMeta('og:url', canonical, true)
-    ensureMeta('og:type', metric ? 'article' : 'website', true)
+    ensureMeta('og:type', metric || isArticle ? 'article' : 'website', true)
     ensureMeta('og:site_name', SITE_NAME, true)
     ensureMeta('og:image', OG_IMAGE, true)
     ensureMeta('og:image:width', '1200', true)
@@ -80,23 +91,42 @@ export default function SEO() {
       document.head.appendChild(script)
     }
 
-    script.text = JSON.stringify(metric ? {
-      '@context': 'https://schema.org',
-      '@type': 'Dataset',
-      name: metric.label,
-      description: metric.summary,
-      url: canonical,
-      dateModified: metric.asOf,
-      creator: { '@type': 'Organization', name: SITE_NAME },
-      citation: metric.sourceUrl,
-    } : {
-      '@context': 'https://schema.org',
-      '@type': pathname === '/updates' ? 'CollectionPage' : 'WebSite',
-      name: title,
-      url: canonical,
-      description,
-      isPartOf: pathname === '/updates' ? { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } : undefined,
-    })
+    if (metric) {
+      script.text = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        name: metric.label,
+        description: metric.summary,
+        url: canonical,
+        dateModified: metric.asOf,
+        creator: { '@type': 'Organization', name: SITE_NAME },
+        citation: metric.sourceUrl,
+      })
+    } else if (report) {
+      script.text = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: report.title,
+        description: report.deck,
+        url: canonical,
+        mainEntityOfPage: canonical,
+        datePublished: report.publishedAt,
+        dateModified: report.updatedAt,
+        author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+        publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+        isPartOf: { '@type': 'CollectionPage', name: 'State of AI Progress reports', url: `${SITE_URL}/reports` },
+      })
+    } else {
+      const isCollection = pathname === '/updates' || pathname === '/reports'
+      script.text = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': isCollection ? 'CollectionPage' : 'WebSite',
+        name: title,
+        url: canonical,
+        description,
+        isPartOf: isCollection ? { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } : undefined,
+      })
+    }
   }, [location.pathname])
 
   return null
