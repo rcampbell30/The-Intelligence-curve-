@@ -7,6 +7,7 @@ import './evidence.css'
 import './responsive.css'
 import './data-pages.css'
 import './interactive.css'
+import './then-vs-now.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
