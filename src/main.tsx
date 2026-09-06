@@ -10,6 +10,7 @@ import './interactive.css'
 import './then-vs-now.css'
 import './metric-detail.css'
 import './velocity.css'
+import './updates.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
