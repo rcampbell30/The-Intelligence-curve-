@@ -34,6 +34,10 @@ function publicOverride(sourceId: string, snapshot: Snapshot, approvedAt: string
       value: {
         headline: `${score.toFixed(2)}%`,
         secondary: `current leaderboard leader · ${leader}`,
+        summary: `Scale’s current HLE leaderboard has a frontier score of ${score.toFixed(2)}%, up from low-single-digit scores when the benchmark was introduced.`,
+        detailInterpretation: `The current dated snapshot is ${score.toFixed(2)}%, versus low-single-digit frontier results when the benchmark was introduced.`,
+        seriesValue: score,
+        seriesDetail: leader,
         asOf,
         approvedAt,
         sourceId,
@@ -50,6 +54,8 @@ function publicOverride(sourceId: string, snapshot: Snapshot, approvedAt: string
       value: {
         headline: `${standard}%`,
         secondary: `standard harness · ${adapter}% provider adapter`,
+        summary: `ARC Prize reports GPT-6 Astra at ${standard}% on ARC-AGI-3 Semi-Private with the standard harness and ${adapter}% with the provider-adapter configuration.`,
+        detailInterpretation: `Astra scored ${standard}% under the standard harness and ${adapter}% using a provider-adapter configuration. Those are intentionally kept separate.`,
         asOf,
         approvedAt,
         sourceId,
@@ -78,12 +84,11 @@ export default async (req: Request) => {
   const action = body.action as 'approve' | 'reject'
   const stateKey = `state/${draft.sourceId}`
   const state = await store.get(stateKey, { type: 'json' }) as Record<string, unknown> | null
+  const override = action === 'approve' ? publicOverride(draft.sourceId, draft.candidateSnapshot, reviewedAt) : null
 
   if (action === 'approve') {
     await store.setJSON(`baselines/${draft.sourceId}`, draft.candidateSnapshot)
     await store.delete(`ignored/${draft.sourceId}`)
-
-    const override = publicOverride(draft.sourceId, draft.candidateSnapshot, reviewedAt)
     if (override) await store.setJSON(`overrides/${override.metricId}`, override.value)
 
     if (state) {
@@ -118,9 +123,10 @@ export default async (req: Request) => {
     reviewedAt,
     publishedSnapshot: draft.publishedSnapshot,
     candidateSnapshot: draft.candidateSnapshot,
+    publishedOverride: override?.value ?? null,
   })
 
-  return Response.json({ ok: true, action, reviewedAt, published: action === 'approve' && Boolean(publicOverride(draft.sourceId, draft.candidateSnapshot, reviewedAt)) }, {
+  return Response.json({ ok: true, action, reviewedAt, published: Boolean(override) }, {
     headers: { 'cache-control': 'no-store' },
   })
 }
