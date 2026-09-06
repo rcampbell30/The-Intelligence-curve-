@@ -16,7 +16,7 @@ const pages: Record<string, { title: string; description: string }> = {
   '/reports': { title: 'Monthly State of AI Progress Reports — The Intelligence Curve', description: 'Monthly source-linked AI progress briefs covering what moved, what stayed unchanged and how the evidence should be interpreted.' },
   '/review': { title: 'Private Review — The Intelligence Curve', description: 'Protected editorial review workflow for monitored source changes.' },
   '/then-vs-now': { title: 'Then vs Now — The Intelligence Curve', description: 'Before-and-after comparisons showing how frontier AI capability, autonomy, infrastructure and economics have changed.' },
-  '/benchmarks': { title: 'AI Benchmarks — The Intelligence Curve', description: 'Track frontier benchmark results historically with source, harness and methodology context preserved.' },
+  '/benchmarks': { title: 'AI Benchmark Lifecycle — The Intelligence Curve', description: 'Track frontier benchmark results alongside lifecycle status, saturation, contamination, harness and version risks.' },
   '/agents': { title: 'AI Agent Autonomy — The Intelligence Curve', description: 'Track the task-completion horizons of frontier AI agents and how reliable autonomous work is changing.' },
   '/scaling': { title: 'AI Scaling — The Intelligence Curve', description: 'Track training compute, data-centre capacity, power and the physical infrastructure behind frontier AI.' },
   '/timeline': { title: 'AI Progress Timeline — The Intelligence Curve', description: 'A source-linked chronology of major AI capability, agent and infrastructure milestones.' },
@@ -53,22 +53,28 @@ export default function SEO() {
     const metric = metricId ? metrics.find((item) => item.id === metricId) : undefined
     const reportSlug = pathname.startsWith('/reports/') ? pathname.split('/').pop() : undefined
     const report = reportSlug ? getReport(reportSlug) : undefined
+    const isKnownStatic = Boolean(pages[pathname])
+    const isNotFound = !metric && !report && !isKnownStatic
 
-    const title = metric
-      ? `${metric.label} — The Intelligence Curve`
-      : report
-        ? `${report.title} — The Intelligence Curve`
-        : (pages[pathname]?.title ?? SITE_NAME)
-    const description = metric
-      ? `${metric.summary} ${metric.secondary}. Source: ${metric.source}.`
-      : report?.deck ?? pages[pathname]?.description ?? DEFAULT_DESCRIPTION
+    const title = isNotFound
+      ? `Page not found — ${SITE_NAME}`
+      : metric
+        ? `${metric.label} — The Intelligence Curve`
+        : report
+          ? `${report.title} — The Intelligence Curve`
+          : (pages[pathname]?.title ?? SITE_NAME)
+    const description = isNotFound
+      ? 'The requested Intelligence Curve page does not exist.'
+      : metric
+        ? `${metric.summary} ${metric.secondary}. Source: ${metric.source}.`
+        : report?.deck ?? pages[pathname]?.description ?? DEFAULT_DESCRIPTION
     const canonical = `${SITE_URL}${pathname === '/' ? '' : pathname}`
     const isPrivateReview = pathname === '/review'
     const isArticle = Boolean(report)
 
     document.title = title
     ensureMeta('description', description)
-    ensureMeta('robots', isPrivateReview ? 'noindex,nofollow,noarchive' : 'index,follow')
+    ensureMeta('robots', isPrivateReview || isNotFound ? 'noindex,nofollow,noarchive' : 'index,follow')
     ensureMeta('og:title', title, true)
     ensureMeta('og:description', description, true)
     ensureMeta('og:url', canonical, true)
