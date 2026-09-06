@@ -138,6 +138,17 @@ export function buildReportDefinition(slug: string): ReportDefinition {
 
 export const monthlyReports: MonthlyReport[] = monthsFromStart().map(buildReportDefinition)
 
+export function refreshLiveReports() {
+  for (const slug of monthsFromStart()) {
+    const index = monthlyReports.findIndex((item) => item.slug === slug)
+    if (index >= 0 && monthlyReports[index].snapshot) continue
+    const refreshed = buildReportDefinition(slug)
+    if (index >= 0) monthlyReports[index] = refreshed
+    else monthlyReports.push(refreshed)
+  }
+  monthlyReports.sort((a, b) => b.slug.localeCompare(a.slug))
+}
+
 export function applyReportSnapshots(snapshots: FrozenReportSnapshot[]) {
   for (const snapshot of snapshots) {
     const report: MonthlyReport = { ...snapshot.report, status: 'final', snapshot }
@@ -155,11 +166,9 @@ export function getReport(slug: string) {
 
 export function getReportEvents(report: MonthlyReport) {
   if (report.snapshot) return [...report.snapshot.events].sort((a, b) => b.date.localeCompare(a.date))
-
-  return report.eventIds
-    .map((id) => updateEvents.find((event) => event.id === id))
-    .filter((event): event is NonNullable<typeof event> => Boolean(event))
-    .sort((a, b) => b.date.localeCompare(a.date))
+  return updateEvents
+    .filter((event) => event.date.startsWith(report.slug))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
 }
 
 export function reportStatusLabel(status: ReportStatus) {
