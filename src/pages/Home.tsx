@@ -4,6 +4,7 @@ import EvidenceDashboard from '../components/EvidenceDashboard'
 import GrowthChart from '../components/GrowthChart'
 import MetricCard from '../components/MetricCard'
 import { categories, metrics } from '../data/metrics'
+import { velocityRows } from '../data/velocity'
 
 const exploreCategories = [
   categories[0],
@@ -28,6 +29,8 @@ const exploreCategories = [
   ...categories.slice(1),
 ]
 
+const fastestSignals = [...velocityRows].sort((a, b) => a.months - b.months).slice(0, 3)
+
 export default function Home() {
   return (
     <>
@@ -45,6 +48,25 @@ export default function Home() {
       </section>
 
       <AIPulse />
+
+      <section className="section-pad fastest-home-section">
+        <div className="fastest-home-head">
+          <div><span className="eyebrow">FASTEST MOVING</span><h2>Three curves changing fastest.</h2></div>
+          <div><p>Ranked by historical doubling or halving time. This compares velocity, not importance or intelligence.</p><Link to="/velocity" className="text-link">Open full velocity leaderboard →</Link></div>
+        </div>
+        <div className="fastest-home-grid">
+          {fastestSignals.map((signal, index) => (
+            <Link to={signal.metricPath} className="fastest-home-card" key={signal.id}>
+              <div className="fastest-home-rank">#{index + 1}</div>
+              <span className="eyebrow">{signal.direction === 'halving' ? 'HALVING TIME' : 'DOUBLING TIME'}</span>
+              <strong>{signal.months}<small> months</small></strong>
+              <h3>{signal.label}</h3>
+              <p>{signal.note}</p>
+              <span className="fastest-home-arrow">↗</span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="section-pad block-section">
         <div className="section-heading">
