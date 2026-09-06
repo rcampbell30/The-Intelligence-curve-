@@ -6,6 +6,7 @@ import './styles.css'
 import './evidence.css'
 import './responsive.css'
 import './data-pages.css'
+import './interactive.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
