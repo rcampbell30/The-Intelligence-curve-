@@ -71,6 +71,9 @@ export default function SEO() {
     const canonical = `${SITE_URL}${pathname === '/' ? '' : pathname}`
     const isPrivateReview = pathname === '/review'
     const isArticle = Boolean(report)
+    const socialImage = report
+      ? `${SITE_URL}/.netlify/images?url=${encodeURIComponent(`/report-og/${report.slug}`)}&w=1200&h=630&fit=cover&fm=png`
+      : OG_IMAGE
 
     document.title = title
     ensureMeta('description', description)
@@ -80,13 +83,13 @@ export default function SEO() {
     ensureMeta('og:url', canonical, true)
     ensureMeta('og:type', metric || isArticle ? 'article' : 'website', true)
     ensureMeta('og:site_name', SITE_NAME, true)
-    ensureMeta('og:image', OG_IMAGE, true)
+    ensureMeta('og:image', socialImage, true)
     ensureMeta('og:image:width', '1200', true)
     ensureMeta('og:image:height', '630', true)
     ensureMeta('twitter:card', 'summary_large_image')
     ensureMeta('twitter:title', title)
     ensureMeta('twitter:description', description)
-    ensureMeta('twitter:image', OG_IMAGE)
+    ensureMeta('twitter:image', socialImage)
     ensureCanonical(canonical)
 
     let script = document.head.querySelector<HTMLScriptElement>('#tic-structured-data')
@@ -116,6 +119,7 @@ export default function SEO() {
         description: report.deck,
         url: canonical,
         mainEntityOfPage: canonical,
+        image: socialImage,
         datePublished: report.publishedAt,
         dateModified: report.updatedAt,
         author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
