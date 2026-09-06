@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FreshnessBadge from '../components/FreshnessBadge'
+import MonitorStatusPanel from '../components/MonitorStatusPanel'
 import SegmentedControl from '../components/SegmentedControl'
 import { formatFreshnessDate, freshnessByMetric, getFreshness } from '../data/freshness'
 import { metrics } from '../data/metrics'
@@ -51,6 +52,8 @@ export default function UpdatesPage() {
         <article className="freshness-summary due"><span className="eyebrow">REVIEW DUE</span><strong>{dueCount}</strong><p>Metrics that have reached their next verification date.</p></article>
         <article className="freshness-summary stale"><span className="eyebrow">STALE</span><strong>{staleCount}</strong><p>Metrics overdue by at least three review intervals.</p></article>
       </div>
+
+      <MonitorStatusPanel />
 
       <div className="section-heading updates-heading">
         <div><span className="eyebrow">CHANGE LOG</span><h2>Evidence that actually moved</h2></div>
