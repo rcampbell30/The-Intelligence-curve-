@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import AIPulse from '../components/AIPulse'
 import EvidenceDashboard from '../components/EvidenceDashboard'
 import GrowthChart from '../components/GrowthChart'
 import MetricCard from '../components/MetricCard'
@@ -36,6 +37,8 @@ export default function Home() {
           <span>Updated 6 Sep 2026</span><span>{metrics.length} headline indicators</span><span>Observed ≠ fitted ≠ projected</span>
         </div>
       </section>
+
+      <AIPulse />
 
       <section className="section-pad block-section">
         <div className="section-heading">
