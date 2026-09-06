@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import { loadMetricOverrides } from './data/runtimeMetrics'
 import './styles.css'
 import './evidence.css'
 import './responsive.css'
@@ -12,11 +13,18 @@ import './metric-detail.css'
 import './velocity.css'
 import './updates.css'
 import './monitoring.css'
+import './review.css'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-)
+async function bootstrap() {
+  await loadMetricOverrides()
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </StrictMode>,
+  )
+}
+
+void bootstrap()
