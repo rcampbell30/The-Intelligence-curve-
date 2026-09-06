@@ -17,6 +17,12 @@ const monitors = [
   { id: 'hle-leaderboard', label: "Humanity's Last Exam leaderboard", url: 'https://labs.scale.com/leaderboard/humanitys_last_exam', metricIds: ['hle-frontier'] },
   { id: 'metr-time-horizons', label: 'METR Time Horizons', url: 'https://metr.org/time-horizons/', metricIds: ['agent-time-horizon'] },
   { id: 'arc-agi-3-astra', label: 'ARC-AGI-3 Astra results', url: 'https://arcprize.org/results/openai-gpt-6-astra', metricIds: ['astra-arc-agi-3'] },
+  { id: 'epoch-eci-frontier', label: 'Epoch ECI frontier trend', url: 'https://epoch.ai/data-insights/eci-frontier-trend', metricIds: ['eci-frontier'] },
+  { id: 'epoch-core-trends', label: 'Epoch core AI scaling trends', url: 'https://epoch.ai/trends', metricIds: ['global-compute-capacity', 'training-compute', 'context-windows'] },
+  { id: 'epoch-data-center-compute', label: 'Epoch frontier data-centre compute', url: 'https://epoch.ai/data-insights/largest-data-center-compute', metricIds: [] },
+  { id: 'epoch-data-center-power', label: 'Epoch frontier data-centre power', url: 'https://epoch.ai/data-insights/frontier-data-center-power', metricIds: [] },
+  { id: 'epoch-chip-price-performance', label: 'Epoch AI-chip performance per dollar', url: 'https://epoch.ai/data-insights/chip-performance-per-dollar', metricIds: ['chip-price-performance'] },
+  { id: 'epoch-inference-price', label: 'Epoch inference-price trend analysis', url: 'https://epoch.ai/data-insights/llm-inference-price-trends', metricIds: ['inference-price'] },
 ]
 
 export default async () => {
