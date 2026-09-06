@@ -11,6 +11,7 @@ import './then-vs-now.css'
 import './metric-detail.css'
 import './velocity.css'
 import './updates.css'
+import './monitoring.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
