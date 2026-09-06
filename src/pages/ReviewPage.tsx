@@ -15,8 +15,17 @@ type Draft = {
   action?: 'approve' | 'reject'
 }
 
+const publishableSources = new Set([
+  'hle-leaderboard',
+  'arc-agi-3-astra',
+  'epoch-eci-frontier',
+  'epoch-core-trends',
+  'epoch-chip-price-performance',
+  'epoch-inference-price',
+])
+
 function canPublishMetric(sourceId: string) {
-  return sourceId === 'hle-leaderboard' || sourceId === 'arc-agi-3-astra'
+  return publishableSources.has(sourceId)
 }
 
 function formatTime(value?: string) {
@@ -73,14 +82,16 @@ export default function ReviewPage() {
         headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
         body: JSON.stringify({ draftKey: draft.key, action }),
       })
-      const payload = await response.json().catch(() => ({})) as { error?: string; published?: boolean }
+      const payload = await response.json().catch(() => ({})) as { error?: string; published?: boolean; publishedMetrics?: string[]; movementPublished?: boolean }
       if (response.status === 401) {
         setStatus('unauthorised')
         return
       }
       if (!response.ok) throw new Error(payload.error ?? `HTTP ${response.status}`)
       setMessage(action === 'approve'
-        ? payload.published ? 'Approved and published to the live metric override.' : 'Approved as the new source baseline; no headline value was auto-published for this source.'
+        ? payload.published
+          ? `Approved and published to ${payload.publishedMetrics?.length ?? 0} live metric${payload.publishedMetrics?.length === 1 ? '' : 's'}${payload.movementPublished ? '; movement feed updated.' : '.'}`
+          : `Approved as the new source baseline${payload.movementPublished ? '; movement feed updated.' : '.'} No headline value was auto-published for this source.`
         : 'Rejected. This exact candidate will be ignored unless the source changes again.')
       await loadQueue(key)
     } catch (error) {
@@ -95,7 +106,7 @@ export default function ReviewPage() {
       <div className="page-hero data-page-hero review-hero">
         <span className="eyebrow">PRIVATE REVIEW</span>
         <h1>Approve evidence<br />before it goes live.</h1>
-        <p>The automatic monitors can detect changes, but only this protected review flow can accept a new baseline or publish a supported headline override.</p>
+        <p>The automatic monitors detect changes, but only this protected review flow can accept a new baseline. Supported sources also publish reviewed metric overrides and a public movement record.</p>
         <div className="page-meta-row"><span>Server-side key required</span><span>Audit trail retained</span><span>No blind auto-publishing</span></div>
       </div>
 
@@ -126,7 +137,7 @@ export default function ReviewPage() {
             ) : pending.map((draft) => (
               <article className="review-card" key={draft.key}>
                 <div className="review-card-head">
-                  <div><span className="eyebrow">{draft.sourceLabel}</span><h2>{draft.metricIds.join(', ')}</h2></div>
+                  <div><span className="eyebrow">{draft.sourceLabel}</span><h2>{draft.metricIds.length ? draft.metricIds.join(', ') : 'Source-level evidence'}</h2></div>
                   <span>{formatTime(draft.detectedAt)}</span>
                 </div>
                 <div className="review-diff-grid">
@@ -135,8 +146,8 @@ export default function ReviewPage() {
                 </div>
                 <div className="review-publish-note">
                   {canPublishMetric(draft.sourceId)
-                    ? 'Approval will update the accepted baseline and publish the supported metric headline through the runtime override layer.'
-                    : 'Approval will accept this source state as reviewed, but will not invent a new headline value. METR still needs a human interpretation when its methodology/page changes.'}
+                    ? 'Approval will update the reviewed source baseline, publish the supported metric value(s), and add one audited public movement entry.'
+                    : 'Approval will accept the reviewed source state and add one audited public movement entry, but no headline will be inferred from a source that does not map cleanly to a public metric.'}
                 </div>
                 <div className="review-actions">
                   <a className="button secondary" href={draft.sourceUrl} target="_blank" rel="noreferrer">Open source ↗</a>
