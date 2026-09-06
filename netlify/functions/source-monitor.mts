@@ -88,8 +88,8 @@ const monitors: MonitorDefinition[] = [
   },
 ]
 
-function snapshotsEqual(a: Snapshot, b: Snapshot) {
-  return JSON.stringify(a) === JSON.stringify(b)
+function snapshotsEqual(a?: Snapshot | null, b?: Snapshot | null) {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
 }
 
 async function fetchSource(url: string) {
@@ -107,11 +107,16 @@ export default async () => {
 
   for (const monitor of monitors) {
     const previous = await store.get(`state/${monitor.id}`, { type: 'json' }) as MonitorState | null
+    const approvedBaseline = await store.get(`baselines/${monitor.id}`, { type: 'json' }) as Snapshot | null
+    const ignoredCandidate = await store.get(`ignored/${monitor.id}`, { type: 'json' }) as Snapshot | null
+    const publishedSnapshot = approvedBaseline ?? monitor.publishedSnapshot
 
     try {
       const text = await fetchSource(monitor.url)
       const currentSnapshot = monitor.parse(text)
-      const pendingReview = !snapshotsEqual(currentSnapshot, monitor.publishedSnapshot)
+      const changed = !snapshotsEqual(currentSnapshot, publishedSnapshot)
+      const explicitlyIgnored = changed && snapshotsEqual(currentSnapshot, ignoredCandidate)
+      const pendingReview = changed && !explicitlyIgnored
       const changeDetectedAt = pendingReview
         ? (previous?.pendingReview ? previous.changeDetectedAt : checkedAt)
         : undefined
@@ -124,7 +129,7 @@ export default async () => {
         lastChecked: checkedAt,
         lastSuccess: checkedAt,
         currentSnapshot,
-        publishedSnapshot: monitor.publishedSnapshot,
+        publishedSnapshot,
         pendingReview,
         ...(changeDetectedAt ? { changeDetectedAt } : {}),
       }
@@ -138,7 +143,7 @@ export default async () => {
           sourceUrl: monitor.url,
           metricIds: monitor.metricIds,
           detectedAt: checkedAt,
-          publishedSnapshot: monitor.publishedSnapshot,
+          publishedSnapshot,
           candidateSnapshot: currentSnapshot,
           status: 'pending-review',
         })
@@ -154,7 +159,7 @@ export default async () => {
         lastSuccess: previous?.lastSuccess,
         lastError: message,
         currentSnapshot: previous?.currentSnapshot,
-        publishedSnapshot: monitor.publishedSnapshot,
+        publishedSnapshot,
         pendingReview: previous?.pendingReview ?? false,
         changeDetectedAt: previous?.changeDetectedAt,
       }
