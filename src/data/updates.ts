@@ -98,13 +98,24 @@ export const updateEvents: UpdateEvent[] = [
   },
   {
     id: 'swe-bench-retired',
-    date: '2026-01-01',
+    date: '2026-02-23',
     category: 'Methodology',
     title: 'SWE-bench Verified moves from frontier signal to retired benchmark',
     summary: 'The Intelligence Curve keeps the historical rise visible but marks SWE-bench Verified as retired after contamination and task-quality concerns made it less trustworthy as a frontier measure.',
     source: 'OpenAI',
     sourceUrl: 'https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/',
     changeLabel: 'Status changed → RETIRED',
-    note: 'The date is stored at year granularity here; the feed does not imply a precise 1 January publication date.',
+    note: 'OpenAI published its retirement analysis on 23 February 2026.',
   },
 ]
+
+export function mergeRuntimeUpdateEvents(events: UpdateEvent[]) {
+  const seen = new Set(updateEvents.map((event) => event.id))
+  for (const event of events) {
+    if (!seen.has(event.id)) {
+      updateEvents.push(event)
+      seen.add(event.id)
+    }
+  }
+  updateEvents.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
+}
