@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { loadMetricOverrides } from './data/runtimeMetrics'
+import { loadReportSnapshots } from './data/runtimeReports'
 import './styles.css'
 import './evidence.css'
 import './responsive.css'
@@ -20,7 +21,7 @@ import './share-report.css'
 import './benchmark-lifecycle.css'
 
 async function bootstrap() {
-  await loadMetricOverrides()
+  await Promise.all([loadMetricOverrides(), loadReportSnapshots()])
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
