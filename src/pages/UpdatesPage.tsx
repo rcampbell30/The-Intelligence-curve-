@@ -19,11 +19,13 @@ export default function UpdatesPage() {
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [source, setSource] = useState<SourceFilter>('all')
 
-  const visible = useMemo(() => updateEvents.filter((event) => {
-    const categoryMatch = category === 'all' || event.category === category
-    const sourceMatch = source === 'all' || event.source === source
-    return categoryMatch && sourceMatch
-  }), [category, source])
+  const visible = useMemo(() => updateEvents
+    .filter((event) => {
+      const categoryMatch = category === 'all' || event.category === category
+      const sourceMatch = source === 'all' || event.source === source
+      return categoryMatch && sourceMatch
+    })
+    .sort((a, b) => b.date.localeCompare(a.date)), [category, source])
 
   const freshnessRows = metrics.map((metric) => ({ metric, freshness: getFreshness(metric.id) })).filter((row) => row.freshness)
   const currentCount = freshnessRows.filter((row) => row.freshness?.status === 'current').length
