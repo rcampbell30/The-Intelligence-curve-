@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Metric } from '../data/metrics'
 
 export default function MetricCard({ metric }: { metric: Metric }) {
@@ -12,6 +13,7 @@ export default function MetricCard({ metric }: { metric: Metric }) {
       <div className="metric-secondary">{metric.secondary}</div>
       <p>{metric.summary}</p>
       {metric.caution && <p className="metric-caution">{metric.caution}</p>}
+      <Link className="metric-detail-link" to={`/metric/${metric.id}`}>Explore metric →</Link>
       <div className="metric-source">
         <a href={metric.sourceUrl} target="_blank" rel="noreferrer">{metric.source} ↗</a>
         <span>as of {metric.asOf}</span>
