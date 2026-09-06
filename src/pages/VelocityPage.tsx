@@ -1,18 +1,19 @@
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { velocityRows, type VelocityDirection } from '../data/velocity'
 
-const velocityRows = [
-  { label: 'Inference price', months: 2.1, direction: 'halving', source: 'Epoch AI', url: 'https://epoch.ai/data-insights/llm-inference-price-trends', note: 'Median fitted price decline at fixed capability, converted from ~50× cheaper/year.' },
-  { label: 'Context windows', months: 2.4, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/trends', note: 'Frontier LLM context-window size since 2023.' },
-  { label: 'Agent task horizon', months: 4.3, direction: 'doubling', source: 'METR', url: 'https://metr.org/blog/2026-1-29-time-horizon-1-1/', note: 'TH1.1 post-2023 50% task-completion horizon; 131 days ≈ 4.3 months.' },
-  { label: 'Training compute', months: 5.2, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/trends', note: 'Frontier language-model training compute since 2020.' },
-  { label: 'Global compute stock', months: 6.8, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/trends', note: 'Total computing power of the global AI-chip stock.' },
-  { label: 'Training cost', months: 7.0, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/trends', note: 'Frontier language-model training cost since 2020.' },
-  { label: 'Software efficiency', months: 7.6, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/trends', note: 'Improvement in pre-training compute efficiency.' },
-  { label: 'Data-centre power', months: 10.0, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/data-insights/frontier-data-center-power', note: 'Historical fit to observed frontier data-centre IT power records.' },
-  { label: 'Chip perf / $', months: 20.4, direction: 'doubling', source: 'Epoch AI', url: 'https://epoch.ai/data-insights/chip-performance-per-dollar', note: 'Spending-weighted AI-chip performance per dollar since 2023.' },
-]
+type SortMode = 'fastest' | 'slowest'
+type DirectionFilter = 'all' | VelocityDirection
 
 export default function VelocityPage() {
+  const [sortMode, setSortMode] = useState<SortMode>('fastest')
+  const [directionFilter, setDirectionFilter] = useState<DirectionFilter>('all')
+
+  const rankedRows = useMemo(() => velocityRows
+    .filter((row) => directionFilter === 'all' || row.direction === directionFilter)
+    .sort((a, b) => sortMode === 'fastest' ? a.months - b.months : b.months - a.months), [directionFilter, sortMode])
+
   return (
     <section className="section-pad page-section velocity-page">
       <div className="page-hero data-page-hero velocity-hero">
@@ -28,12 +29,73 @@ export default function VelocityPage() {
         <a href="https://epoch.ai/data-insights/eci-frontier-trend" target="_blank" rel="noreferrer">Epoch AI source ↗</a>
       </article>
 
+      <article className="velocity-leaderboard" aria-labelledby="velocity-leaderboard-title">
+        <div className="velocity-leaderboard-head">
+          <div>
+            <span className="eyebrow">FASTEST-CHANGING SIGNALS</span>
+            <h2 id="velocity-leaderboard-title">Which curves are moving fastest?</h2>
+            <p>Ranked by historical doubling or halving time. Shorter intervals mean faster measured change — not greater importance or more “intelligence”.</p>
+          </div>
+          <div className="velocity-leaderboard-count"><strong>{rankedRows.length}</strong><span>signals shown</span></div>
+        </div>
+
+        <div className="velocity-controls" aria-label="Velocity leaderboard controls">
+          <div className="velocity-control-group">
+            <span>Direction</span>
+            <div className="velocity-toggle-row">
+              {(['all', 'doubling', 'halving'] as DirectionFilter[]).map((value) => (
+                <button
+                  type="button"
+                  key={value}
+                  className={directionFilter === value ? 'active' : ''}
+                  aria-pressed={directionFilter === value}
+                  onClick={() => setDirectionFilter(value)}
+                >
+                  {value === 'all' ? 'All' : value === 'doubling' ? 'Doubling' : 'Halving'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="velocity-control-group">
+            <span>Rank</span>
+            <div className="velocity-toggle-row">
+              <button type="button" className={sortMode === 'fastest' ? 'active' : ''} aria-pressed={sortMode === 'fastest'} onClick={() => setSortMode('fastest')}>Fastest → slowest</button>
+              <button type="button" className={sortMode === 'slowest' ? 'active' : ''} aria-pressed={sortMode === 'slowest'} onClick={() => setSortMode('slowest')}>Slowest → fastest</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="velocity-ranking-list">
+          {rankedRows.map((row, index) => (
+            <article className="velocity-ranking-row" key={row.id}>
+              <div className="velocity-ranking-number">{String(index + 1).padStart(2, '0')}</div>
+              <div className="velocity-ranking-copy">
+                <div className="velocity-ranking-labels">
+                  <span className="velocity-direction-badge">{row.direction === 'halving' ? 'Halving' : 'Doubling'}</span>
+                  <span className="velocity-evidence-badge">Historical trend fit</span>
+                </div>
+                <h3>{row.label}</h3>
+                <p>{row.note}</p>
+              </div>
+              <div className="velocity-ranking-stat">
+                <strong>{row.months}</strong>
+                <span>months / 2×</span>
+              </div>
+              <div className="velocity-ranking-actions">
+                <Link to={row.metricPath}>Open metric →</Link>
+                <a href={row.sourceUrl} target="_blank" rel="noreferrer">{row.source} ↗</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </article>
+
       <article className="data-chart-card velocity-chart-card">
-        <div className="data-chart-header"><div><span className="eyebrow">MULTIPLICATIVE PACE</span><h3>Months for a 2× change</h3></div><span className="method-pill">Historical fits</span></div>
-        <p className="data-chart-copy">For inference price the value is a halving time; every other row is a doubling time. The chart compares pace, not importance.</p>
+        <div className="data-chart-header"><div><span className="eyebrow">CURRENT FILTER</span><h3>Months for a 2× change</h3></div><span className="method-pill">Historical fits</span></div>
+        <p className="data-chart-copy">The chart mirrors the leaderboard controls above. For inference price the value is a halving time; every other row is a doubling time. The comparison is pace, not importance.</p>
         <div className="chart-wrap evidence-chart">
-          <ResponsiveContainer width="100%" height={520}>
-            <BarChart data={velocityRows} layout="vertical" margin={{ top: 8, right: 22, left: 28, bottom: 8 }}>
+          <ResponsiveContainer width="100%" height={Math.max(260, rankedRows.length * 58)}>
+            <BarChart data={rankedRows} layout="vertical" margin={{ top: 8, right: 22, left: 28, bottom: 8 }}>
               <CartesianGrid horizontal={false} strokeDasharray="4 8" opacity={0.18} />
               <XAxis type="number" tickFormatter={(value) => `${value}m`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="label" width={126} tick={{ fill: '#8c949d', fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -43,19 +105,6 @@ export default function VelocityPage() {
           </ResponsiveContainer>
         </div>
       </article>
-
-      <div className="velocity-grid">
-        {velocityRows.map((row, index) => (
-          <article className="velocity-card" key={row.label}>
-            <div className="velocity-rank">{String(index + 1).padStart(2, '0')}</div>
-            <span className="eyebrow">{row.direction === 'halving' ? 'COST DECLINE' : 'GROWTH'}</span>
-            <h2>{row.label}</h2>
-            <strong>{row.months} months</strong>
-            <p>{row.note}</p>
-            <a href={row.url} target="_blank" rel="noreferrer">{row.source} ↗</a>
-          </article>
-        ))}
-      </div>
 
       <aside className="velocity-method">
         <span className="eyebrow">HOW TO READ THIS</span>
