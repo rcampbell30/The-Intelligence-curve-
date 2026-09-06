@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 type MonitorState = {
   id: string
@@ -64,7 +65,10 @@ export default function MonitorStatusPanel() {
     <section className="monitoring-section">
       <div className="section-heading">
         <div><span className="eyebrow">AUTOMATIC SOURCE MONITORS</span><h2>Watching the evidence for changes</h2></div>
-        <p>These checks never rewrite public metrics automatically. A changed source is flagged for review first, so parser noise or methodology changes cannot silently become “evidence”.</p>
+        <div>
+          <p>These checks never rewrite public metrics automatically. A changed source is flagged for review first, so parser noise or methodology changes cannot silently become “evidence”.</p>
+          <Link className="monitor-review-link" to="/review">Open private review queue →</Link>
+        </div>
       </div>
 
       {error ? (
