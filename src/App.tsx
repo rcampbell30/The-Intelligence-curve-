@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import MetricDetailPage from './pages/MetricDetailPage'
+import ReviewPage from './pages/ReviewPage'
 import ThenVsNowPage from './pages/ThenVsNowPage'
 import UpdatesPage from './pages/UpdatesPage'
 import VelocityPage from './pages/VelocityPage'
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="trends" element={<TrendsPage />} />
         <Route path="velocity" element={<VelocityPage />} />
         <Route path="updates" element={<UpdatesPage />} />
+        <Route path="review" element={<ReviewPage />} />
         <Route path="then-vs-now" element={<ThenVsNowPage />} />
         <Route path="benchmarks" element={<BenchmarksPage />} />
         <Route path="agents" element={<AgentsPage />} />
