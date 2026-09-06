@@ -19,6 +19,12 @@ const exploreCategories = [
     eyebrow: 'What changed',
     description: 'A source-linked change log plus the freshness status and review cadence for every headline metric.',
   },
+  {
+    name: 'Monthly Reports',
+    path: '/reports',
+    eyebrow: 'State of AI progress',
+    description: 'Permanent monthly briefs separating accepted movement, unchanged signals and methodology changes.',
+  },
   ...categories.slice(1),
 ]
 
@@ -31,7 +37,7 @@ export default function Home() {
         <p className="hero-copy">A source-first view of the curves behind AI progress — capability, autonomous work, compute, efficiency and the infrastructure underneath it.</p>
         <div className="hero-actions">
           <Link to="/trends" className="button primary">Explore the trends <span>→</span></Link>
-          <Link to="/updates" className="button secondary">What changed?</Link>
+          <Link to="/reports/2026-09" className="button secondary">Latest monthly report</Link>
         </div>
         <div className="hero-rule">
           <span>Updated 6 Sep 2026</span><span>{metrics.length} headline indicators</span><span>Observed ≠ fitted ≠ projected</span>
