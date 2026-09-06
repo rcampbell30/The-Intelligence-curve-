@@ -21,6 +21,16 @@ export const benchmarkJumps: BenchmarkJump[] = [
     note: 'Astra also reached 99.9% with its provider-adapter harness; harness configurations are intentionally kept separate.',
   },
   {
+    name: "Humanity's Last Exam",
+    beforeLabel: 'GPT-4o · Nov 2024',
+    afterLabel: 'Current leader · Sep 2026',
+    before: 3.07,
+    after: 46.5,
+    source: 'Scale AI',
+    sourceUrl: 'https://labs.scale.com/leaderboard/humanitys_last_exam',
+    note: 'The current leaderboard is a dated snapshot and will change as new systems are evaluated.',
+  },
+  {
     name: 'OSWorld',
     beforeLabel: 'Frontier · 2025',
     afterLabel: 'Frontier · 2026 AI Index',
@@ -90,6 +100,14 @@ export const timelineMilestones = [
     sourceUrl: 'https://epoch.ai/data-insights/eci-frontier-trend',
   },
   {
+    date: 'Jan 2025',
+    category: 'Benchmarks',
+    title: "Humanity's Last Exam launches with frontier systems below 10%",
+    detail: 'Scale AI and CAIS introduced HLE because many older academic benchmarks were already saturating.',
+    source: 'Scale AI',
+    sourceUrl: 'https://scale.com/blog/humanitys-last-exam-results',
+  },
+  {
     date: 'Jan 2026',
     category: 'Agents',
     title: 'METR releases Time Horizon 1.1',
@@ -112,6 +130,14 @@ export const timelineMilestones = [
     detail: 'Epoch reports a faster frontier trend after reasoning models arrived than for non-reasoning systems.',
     source: 'Epoch AI',
     sourceUrl: 'https://epoch.ai/data-insights/eci-frontier-trend',
+  },
+  {
+    date: 'Sep 2026',
+    category: 'Benchmarks',
+    title: "HLE frontier reaches 46.5%",
+    detail: 'The current Scale leaderboard leader answers nearly half of Humanity’s Last Exam correctly.',
+    source: 'Scale AI',
+    sourceUrl: 'https://labs.scale.com/leaderboard/humanitys_last_exam',
   },
   {
     date: 'Sep 2026',
