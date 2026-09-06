@@ -1,0 +1,237 @@
+.evidence-section {
+  position: relative;
+}
+
+.then-now-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.then-now-card {
+  min-height: 330px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(185,255,102,.045), rgba(255,255,255,.01));
+}
+
+.then-now-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.then-now-topline span:last-child {
+  color: var(--accent);
+}
+
+.then-now-values {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin-top: 44px;
+}
+
+.then-now-values > div {
+  min-width: 0;
+}
+
+.then-now-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #606973;
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: .1em;
+}
+
+.then-now-values strong {
+  display: block;
+  font-size: clamp(34px, 4vw, 58px);
+  line-height: 1;
+  letter-spacing: -.065em;
+  font-weight: 500;
+}
+
+.then-now-values > div:last-child strong {
+  color: var(--accent);
+}
+
+.then-now-values small {
+  display: block;
+  min-height: 34px;
+  margin-top: 9px;
+  color: var(--muted);
+  font: 9px/1.5 'DM Mono', monospace;
+}
+
+.then-now-arrow {
+  color: #59616a;
+  font-size: 22px;
+}
+
+.then-now-card > p {
+  margin: 26px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.then-now-card > a {
+  margin-top: auto;
+  padding-top: 22px;
+  color: var(--text);
+  text-decoration: none;
+  font: 10px 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.evidence-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.data-chart-card {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+}
+
+.data-chart-wide {
+  grid-column: 1 / -1;
+}
+
+.data-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.data-chart-header h3 {
+  margin: 8px 0 0;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+  font-weight: 500;
+}
+
+.observed-pill,
+.method-pill {
+  flex: 0 0 auto;
+  padding: 7px 9px;
+  border-radius: 100px;
+  font: 9px 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.observed-pill {
+  color: #0b0d0f;
+  background: var(--accent);
+}
+
+.method-pill {
+  color: #bdc4cb;
+  border: 1px solid var(--line);
+}
+
+.data-chart-copy {
+  max-width: 720px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.evidence-chart {
+  margin-top: 24px;
+}
+
+.source-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: #6f7881;
+  font: 9px/1.55 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .035em;
+}
+
+.source-row > span {
+  max-width: 680px;
+}
+
+.source-row a {
+  flex: 0 0 auto;
+  color: #bec4ca;
+  text-decoration: none;
+}
+
+.recharts-default-tooltip {
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 5px !important;
+  background: rgba(13,16,20,.96) !important;
+  color: var(--text) !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+}
+
+.recharts-default-legend {
+  font: 10px 'DM Mono', monospace;
+}
+
+@media (max-width: 900px) {
+  .then-now-grid,
+  .evidence-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-chart-wide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .then-now-card,
+  .data-chart-card {
+    padding: 20px 18px;
+  }
+
+  .then-now-values {
+    gap: 10px;
+  }
+
+  .then-now-values strong {
+    font-size: clamp(30px, 11vw, 48px);
+  }
+
+  .data-chart-header {
+    flex-direction: column;
+  }
+
+  .source-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .evidence-chart {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+}
