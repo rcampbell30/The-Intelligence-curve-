@@ -4,6 +4,8 @@
   <url><loc>https://intelligencecurve.netlify.app/trends</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://intelligencecurve.netlify.app/velocity</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://intelligencecurve.netlify.app/updates</loc><changefreq>daily</changefreq><priority>0.95</priority></url>
+  <url><loc>https://intelligencecurve.netlify.app/reports</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://intelligencecurve.netlify.app/reports/2026-09</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
   <url><loc>https://intelligencecurve.netlify.app/then-vs-now</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://intelligencecurve.netlify.app/benchmarks</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://intelligencecurve.netlify.app/agents</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
