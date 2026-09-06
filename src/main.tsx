@@ -16,6 +16,7 @@ import './monitoring.css'
 import './review.css'
 import './ai-pulse.css'
 import './reports.css'
+import './share-report.css'
 
 async function bootstrap() {
   await loadMetricOverrides()
