@@ -11,6 +11,7 @@ const pages: Record<string, { title: string; description: string }> = {
   '/': { title: 'The Intelligence Curve — Tracking the pace of AI progress', description: DEFAULT_DESCRIPTION },
   '/trends': { title: 'AI Trends — The Intelligence Curve', description: 'Compare historical rates across AI capability, compute, context, efficiency, cost and autonomous work.' },
   '/velocity': { title: 'AI Velocity — The Intelligence Curve', description: 'Compare how quickly major AI progress indicators are changing using source-backed doubling and halving times.' },
+  '/updates': { title: 'AI Progress Updates — The Intelligence Curve', description: 'A source-linked AI progress change log with freshness status, verification dates and review cadence for every headline metric.' },
   '/then-vs-now': { title: 'Then vs Now — The Intelligence Curve', description: 'Before-and-after comparisons showing how frontier AI capability, autonomy, infrastructure and economics have changed.' },
   '/benchmarks': { title: 'AI Benchmarks — The Intelligence Curve', description: 'Track frontier benchmark results historically with source, harness and methodology context preserved.' },
   '/agents': { title: 'AI Agent Autonomy — The Intelligence Curve', description: 'Track the task-completion horizons of frontier AI agents and how reliable autonomous work is changing.' },
@@ -87,10 +88,11 @@ export default function SEO() {
       citation: metric.sourceUrl,
     } : {
       '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: SITE_NAME,
-      url: SITE_URL,
-      description: DEFAULT_DESCRIPTION,
+      '@type': pathname === '/updates' ? 'CollectionPage' : 'WebSite',
+      name: title,
+      url: canonical,
+      description,
+      isPartOf: pathname === '/updates' ? { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } : undefined,
     })
   }, [location.pathname])
 
