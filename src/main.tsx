@@ -8,6 +8,7 @@ import './responsive.css'
 import './data-pages.css'
 import './interactive.css'
 import './then-vs-now.css'
+import './metric-detail.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
