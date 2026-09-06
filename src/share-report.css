@@ -1,0 +1,46 @@
+.share-report-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.share-report-actions-compact {
+  margin-top: -3.8rem;
+  margin-bottom: 4.8rem;
+}
+
+.share-report-actions .share-button {
+  cursor: pointer;
+}
+
+.share-report-actions .share-status {
+  min-height: 18px;
+  color: var(--muted);
+  font: 10px 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.monthly-report-hero .share-report-actions {
+  margin-top: 28px;
+}
+
+@media (max-width: 760px) {
+  .share-report-actions,
+  .share-report-actions-compact {
+    align-items: stretch;
+    flex-direction: column;
+    margin-top: 24px;
+    margin-bottom: 3.5rem;
+  }
+
+  .monthly-report-hero .share-report-actions {
+    margin-bottom: 0;
+  }
+
+  .share-report-actions .button {
+    width: 100%;
+  }
+}
