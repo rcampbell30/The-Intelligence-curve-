@@ -12,6 +12,7 @@ const pages: Record<string, { title: string; description: string }> = {
   '/trends': { title: 'AI Trends — The Intelligence Curve', description: 'Compare historical rates across AI capability, compute, context, efficiency, cost and autonomous work.' },
   '/velocity': { title: 'AI Velocity — The Intelligence Curve', description: 'Compare how quickly major AI progress indicators are changing using source-backed doubling and halving times.' },
   '/updates': { title: 'AI Progress Updates — The Intelligence Curve', description: 'A source-linked AI progress change log with freshness status, verification dates and review cadence for every headline metric.' },
+  '/review': { title: 'Private Review — The Intelligence Curve', description: 'Protected editorial review workflow for monitored source changes.' },
   '/then-vs-now': { title: 'Then vs Now — The Intelligence Curve', description: 'Before-and-after comparisons showing how frontier AI capability, autonomy, infrastructure and economics have changed.' },
   '/benchmarks': { title: 'AI Benchmarks — The Intelligence Curve', description: 'Track frontier benchmark results historically with source, harness and methodology context preserved.' },
   '/agents': { title: 'AI Agent Autonomy — The Intelligence Curve', description: 'Track the task-completion horizons of frontier AI agents and how reliable autonomous work is changing.' },
@@ -52,9 +53,11 @@ export default function SEO() {
     const title = metric ? `${metric.label} — The Intelligence Curve` : (pages[pathname]?.title ?? SITE_NAME)
     const description = metric ? `${metric.summary} ${metric.secondary}. Source: ${metric.source}.` : (pages[pathname]?.description ?? DEFAULT_DESCRIPTION)
     const canonical = `${SITE_URL}${pathname === '/' ? '' : pathname}`
+    const isPrivateReview = pathname === '/review'
 
     document.title = title
     ensureMeta('description', description)
+    ensureMeta('robots', isPrivateReview ? 'noindex,nofollow,noarchive' : 'index,follow')
     ensureMeta('og:title', title, true)
     ensureMeta('og:description', description, true)
     ensureMeta('og:url', canonical, true)
