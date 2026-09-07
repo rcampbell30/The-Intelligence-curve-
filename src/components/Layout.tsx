@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import SEO from './SEO'
 
 const links = [
@@ -16,8 +16,21 @@ const links = [
 
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const exploreRef = useRef<HTMLDetailsElement>(null)
+  const { pathname } = useLocation()
+  useEffect(() => {
+    setMenuOpen(false)
+    if (exploreRef.current) exploreRef.current.open = false
+  }, [pathname])
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      if (!exploreRef.current?.contains(event.target as Node) && exploreRef.current) exploreRef.current.open = false
+    }
+    document.addEventListener('pointerdown', closeOutside)
+    return () => document.removeEventListener('pointerdown', closeOutside)
+  }, [])
 
-  const navLinks = (mobile = false) => links.map(([label, path]) => (
+  const navLinks = (mobile = false, items = links) => items.map(([label, path]) => (
     <NavLink
       key={path}
       to={path}
@@ -38,7 +51,17 @@ export default function Layout() {
         </NavLink>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navLinks()}
+          {navLinks(false, links.slice(0, 4))}
+          <details ref={exploreRef} className="explore-nav" onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.currentTarget.open = false
+              event.currentTarget.querySelector('summary')?.focus()
+            }
+          }}>
+            <summary className={`nav-link ${links.slice(4, 8).some(([, path]) => path === pathname) ? 'active' : ''}`}>Explore <span aria-hidden="true">⌄</span></summary>
+            <div className="explore-menu">{navLinks(false, links.slice(4, 8))}</div>
+          </details>
+          {navLinks(false, links.slice(8))}
         </nav>
 
         <button

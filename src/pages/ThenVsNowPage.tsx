@@ -103,7 +103,7 @@ export default function ThenVsNowPage() {
               <XAxis type="number" scale="log" domain={[1, 'auto']} tickFormatter={(value) => `${Number(value)}×`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="shortName" width={126} tick={{ fill: '#8c949d', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip formatter={(value) => [`${Number(value).toFixed(Number(value) >= 10 ? 1 : 2)}×`, 'Relative change']} />
-              <Bar dataKey="factor" name="Relative change" fill="#b9ff66" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="factor" name="Relative change" fill="#a4d98b" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -160,7 +160,7 @@ export default function ThenVsNowPage() {
                 <XAxis dataKey="date" tick={{ fill: '#8c949d', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis domain={[0, 50]} tickFormatter={(value) => `${value}%`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} width={48} />
                 <Tooltip formatter={(value) => [`${Number(value).toFixed(2)}%`, 'Accuracy']} labelFormatter={(label, payload) => payload?.[0]?.payload?.label ? `${label} · ${payload[0].payload.label}` : String(label)} />
-                <Line type="monotone" dataKey="score" stroke="#b9ff66" strokeWidth={3} dot={{ r: 4, fill: '#b9ff66' }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="score" stroke="#a4d98b" strokeWidth={3} dot={{ r: 4, fill: '#a4d98b' }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

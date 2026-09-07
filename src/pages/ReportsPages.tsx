@@ -28,6 +28,7 @@ export function ReportsPage() {
       {latest && (
         <>
           <Link className="latest-report-card" to={`/reports/${latest.slug}`}>
+            <div className="report-edition"><span className="eyebrow">Monthly brief</span><strong>{latest.period}</strong></div>
             <div className="latest-report-copy">
               <div className="report-card-topline">
                 <span className="eyebrow">LATEST EDITION</span>

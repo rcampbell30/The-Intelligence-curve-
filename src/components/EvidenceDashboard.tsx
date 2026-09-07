@@ -80,7 +80,7 @@ export default function EvidenceDashboard() {
                   <Tooltip formatter={(value) => [`${Number(value)}%`, '']} />
                   <Legend />
                   <Bar dataKey="before" name="Earlier score" fill="#59616a" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="after" name="Later score" fill="#b9ff66" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="after" name="Later score" fill="#a4d98b" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -106,7 +106,7 @@ export default function EvidenceDashboard() {
                     formatter={(value) => [`${Number(value).toLocaleString()} H100e`, 'Compute']}
                     labelFormatter={(label, payload) => payload?.[0]?.payload?.label ? `${label} · ${payload[0].payload.label}` : String(label)}
                   />
-                  <Line type="monotone" dataKey="h100e" stroke="#b9ff66" strokeWidth={3} dot={{ r: 3, fill: '#b9ff66' }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="h100e" stroke="#a4d98b" strokeWidth={3} dot={{ r: 3, fill: '#a4d98b' }} activeDot={{ r: 5 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -132,7 +132,7 @@ export default function EvidenceDashboard() {
                   <XAxis dataKey="model" tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} interval={0} angle={-12} textAnchor="end" height={58} />
                   <YAxis scale="log" domain={[1, 500]} allowDataOverflow ticks={[1, 5, 20, 60, 180, 500]} tickFormatter={(value) => `${value}m`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} width={48} />
                   <Tooltip formatter={(value) => [`${Number(value)} minutes`, '50% horizon']} />
-                  <Line type="monotone" dataKey="minutes" stroke="#b9ff66" strokeWidth={3} dot={{ r: 4, fill: '#b9ff66' }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="minutes" stroke="#a4d98b" strokeWidth={3} dot={{ r: 4, fill: '#a4d98b' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

@@ -171,10 +171,10 @@ export default function BenchmarksPage() {
                 <>
                   <Legend />
                   <Bar dataKey="before" name="Earlier score" fill="#59616a" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="after" name="Later score" fill="#b9ff66" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="after" name="Later score" fill="#a4d98b" radius={[4, 4, 0, 0]} />
                 </>
               ) : (
-                <Bar dataKey="gain" name="Gain" fill="#b9ff66" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gain" name="Gain" fill="#a4d98b" radius={[4, 4, 0, 0]} />
               )}
             </BarChart>
           </ResponsiveContainer>

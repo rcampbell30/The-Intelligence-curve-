@@ -100,7 +100,7 @@ export default function VelocityPage() {
               <XAxis type="number" tickFormatter={(value) => `${value}m`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="label" width={126} tick={{ fill: '#8c949d', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip formatter={(value) => [`${Number(value)} months`, '2× change time']} />
-              <Bar dataKey="months" fill="#b9ff66" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="months" fill="#a4d98b" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
