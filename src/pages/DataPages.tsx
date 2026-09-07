@@ -124,7 +124,7 @@ export function TrendsPage() {
               <BarChart data={filteredRates} layout="vertical" margin={{ top: 8, right: 48, left: 0, bottom: 8 }}>
                 <CartesianGrid horizontal={false} strokeDasharray="4 8" opacity={0.18} />
                 <XAxis type="number" tickFormatter={(value) => `${value}m`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#abb4bd', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={136} tick={{ fill: '#abb4bd', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(value) => [`${Number(value)} months`, 'Doubling time']} />
                 <Bar dataKey="months" name="Doubling time" fill="var(--accent)" radius={[0, 4, 4, 0]} maxBarSize={30}><LabelList dataKey="months" position="right" fill="#dce3df" fontSize={12} formatter={(value) => `${value}m`} /></Bar>
               </BarChart>

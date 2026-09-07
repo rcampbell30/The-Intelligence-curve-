@@ -68,7 +68,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .pulse-signal:hover { background: var(--accent-dim); transform: none; }
 .pulse-signal > span { font: 500 13px 'Manrope', sans-serif; color: var(--muted); text-transform: none; letter-spacing: 0; padding-right: 20px; }
 .pulse-signal strong { font-size: clamp(32px, 3vw, 42px); line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.04em; margin: 18px 0 12px; }
-.pulse-signal .pulse-unit { display: inline-block; font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--muted); white-space: nowrap; }
+.pulse-signal .pulse-unit { margin-left: 6px; display: inline-block; font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--muted); white-space: nowrap; }
 .pulse-signal small { font: 400 12px/1.55 'Manrope', sans-serif; color: var(--muted); }
 .pulse-signal i, .pulse-movement-list strong, .pulse-movement-heading > a { color: var(--accent); }
 .pulse-movement-list time, .pulse-movement-list article > div > span { font-size: 11px; color: var(--muted); }
@@ -118,3 +118,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+/* Keep report actions in normal flow beneath the feature card. */
+.share-report-actions-compact { margin-top: 0; margin-bottom: 56px; }
+.share-report-actions .button.secondary { background: var(--panel); color: var(--text); }
