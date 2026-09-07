@@ -5,6 +5,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -111,7 +112,7 @@ export function TrendsPage() {
         />
       </div>
 
-      <div className="data-page-grid two-col">
+      <div className="data-page-grid two-col trends-overview">
         <article className="data-chart-card data-page-card">
           <div className="data-chart-header">
             <div><span className="eyebrow">DOUBLING SPEED</span><h3>How quickly major AI inputs are changing</h3></div>
@@ -120,12 +121,12 @@ export function TrendsPage() {
           <p className="data-chart-copy">Historical fitted doubling times reported by Epoch AI. Filter and reorder the view above. These are not forecasts.</p>
           <div className="chart-wrap evidence-chart">
             <ResponsiveContainer width="100%" height={390}>
-              <BarChart data={filteredRates} layout="vertical" margin={{ top: 8, right: 18, left: 16, bottom: 8 }}>
+              <BarChart data={filteredRates} layout="vertical" margin={{ top: 8, right: 48, left: 0, bottom: 8 }}>
                 <CartesianGrid horizontal={false} strokeDasharray="4 8" opacity={0.18} />
                 <XAxis type="number" tickFormatter={(value) => `${value}m`} tick={{ fill: '#8c949d' }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" width={112} tick={{ fill: '#8c949d', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#abb4bd', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <Tooltip formatter={(value) => [`${Number(value)} months`, 'Doubling time']} />
-                <Bar dataKey="months" name="Doubling time" fill="#b9ff66" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="months" name="Doubling time" fill="var(--accent)" radius={[0, 4, 4, 0]} maxBarSize={30}><LabelList dataKey="months" position="right" fill="#dce3df" fontSize={12} formatter={(value) => `${value}m`} /></Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -219,10 +220,10 @@ export function BenchmarksPage() {
                 <>
                   <Legend />
                   <Bar dataKey="before" name="Earlier score" fill="#59616a" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="after" name="Later score" fill="#b9ff66" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="after" name="Later score" fill="#a4d98b" radius={[4, 4, 0, 0]} />
                 </>
               ) : (
-                <Bar dataKey="gain" name="Gain" fill="#b9ff66" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gain" name="Gain" fill="#a4d98b" radius={[4, 4, 0, 0]} />
               )}
             </BarChart>
           </ResponsiveContainer>
@@ -295,7 +296,7 @@ export function AgentsPage() {
                 width={52}
               />
               <Tooltip formatter={(value) => [`${Number(value)} minutes`, '50% horizon']} />
-              <Line type="monotone" dataKey="minutes" stroke="#b9ff66" strokeWidth={3} dot={{ r: 4, fill: '#b9ff66' }} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="minutes" stroke="#a4d98b" strokeWidth={3} dot={{ r: 4, fill: '#a4d98b' }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -365,7 +366,7 @@ export function ScalingPage() {
                 formatter={(value) => [`${Number(value).toLocaleString()} ${unit}`, measure === 'compute' ? 'Compute' : 'IT power']}
                 labelFormatter={(label, payload) => payload?.[0]?.payload?.label ? `${label} · ${payload[0].payload.label}` : String(label)}
               />
-              <Line type="monotone" dataKey="value" stroke="#b9ff66" strokeWidth={3} dot={{ r: 4, fill: '#b9ff66' }} />
+              <Line type="monotone" dataKey="value" stroke="#a4d98b" strokeWidth={3} dot={{ r: 4, fill: '#a4d98b' }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

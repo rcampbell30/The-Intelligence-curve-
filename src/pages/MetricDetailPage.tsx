@@ -130,7 +130,7 @@ export default function MetricDetailPage() {
                     formatter={(value) => [`${Number(value).toLocaleString()}${detail.seriesUnit === '%' ? '%' : detail.seriesUnit === 'minutes' ? ' minutes' : ` ${detail.seriesUnit ?? ''}`}`, detail.seriesLabel ?? 'Value']}
                     labelFormatter={(label, payload) => payload?.[0]?.payload?.detail ? `${label} · ${payload[0].payload.detail}` : String(label)}
                   />
-                  <Line type="monotone" dataKey="value" stroke="#b9ff66" strokeWidth={3} dot={{ r: 4, fill: '#b9ff66' }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="value" stroke="#a4d98b" strokeWidth={3} dot={{ r: 4, fill: '#a4d98b' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

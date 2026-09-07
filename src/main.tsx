@@ -20,6 +20,7 @@ import './ai-pulse.css'
 import './reports.css'
 import './share-report.css'
 import './benchmark-lifecycle.css'
+import './design-system.css'
 
 async function bootstrap() {
   await Promise.all([loadMetricOverrides(), loadReportSnapshots(), loadRuntimeUpdates()])

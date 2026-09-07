@@ -131,7 +131,7 @@ export default function AIPulse() {
           {pulseSignals.map((signal) => (
             <Link className="pulse-signal" to={signal.path} key={signal.label}>
               <span>{signal.label}</span>
-              <strong>{signal.value}</strong>
+              <strong>{signal.value.split(/\s(.+)/)[0]}{signal.value.includes(' ') && <span className="pulse-unit"> {signal.value.slice(signal.value.indexOf(' ') + 1)}</span>}</strong>
               <small>{signal.detail}</small>
               <i aria-hidden="true">↗</i>
             </Link>
